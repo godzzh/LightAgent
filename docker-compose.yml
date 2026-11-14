@@ -1,0 +1,118 @@
+version: "3.9"
+
+# LightAgent —— 一键启动：前端 + 后端 + PostgreSQL(pgvector) + Redis + Worker + Nginx
+# 使用方式：
+#   1. cp backend/.env.example backend/.env  并修改 SECRET_KEY
+#   2. docker compose up -d --build
+#   3. 打开 http://localhost:8080 （默认管理员 admin / admin123）
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: lightagent-postgres
+    environment:
+      POSTGRES_USER: lightagent
+      POSTGRES_PASSWORD: lightagent
+      POSTGRES_DB: lightagent
+      TZ: Asia/Shanghai
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lightagent -d lightagent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks: [lightagent]
+
+  redis:
+    image: redis:7-alpine
+    container_name: lightagent-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+    networks: [lightagent]
+
+  backend:
+    build:
+      context: ./backend
+    container_name: lightagent-backend
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://lightagent:lightagent@postgres:5432/lightagent
+      REDIS_URL: redis://redis:6379/0
+      STORAGE_DIR: /app/storage
+      ENV: prod
+      DEBUG: "false"
+      CORS_ORIGINS: http://localhost:8080,http://127.0.0.1:8080
+    command: >
+      sh -c "alembic upgrade head &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers"
+    volumes:
+      - storagedata:/app/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks: [lightagent]
+
+  worker:
+    build:
+      context: ./backend
+    container_name: lightagent-worker
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://lightagent:lightagent@postgres:5432/lightagent
+      REDIS_URL: redis://redis:6379/0
+      STORAGE_DIR: /app/storage
+    command: ["python", "-m", "app.tasks.worker"]
+    volumes:
+      - storagedata:/app/storage
+    depends_on:
+      backend:
+        condition: service_started
+    restart: unless-stopped
+    networks: [lightagent]
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE: /api/v1
+    container_name: lightagent-frontend
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks: [lightagent]
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: lightagent-nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - frontend
+      - backend
+    restart: unless-stopped
+    networks: [lightagent]
+
+volumes:
+  pgdata:
+  redisdata:
+  storagedata:
+
+networks:
+  lightagent:
+    driver: bridge
