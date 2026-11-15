@@ -79,7 +79,7 @@ const promptPreview = computed(() => {
   <div class="h-full flex flex-col min-h-0">
     <!-- 顶部：iOS 分段控件 -->
     <div class="flex items-center gap-2 px-3 h-[52px] border-b border-line shrink-0">
-      <div class="flex items-center gap-0.5 p-[2px] rounded-[9px]" style="background: rgba(118, 118, 128, 0.09)">
+      <div class="flex items-center gap-0.5 p-[2px] rounded-[6px]" style="background: rgba(118, 118, 128, 0.09)">
         <button
           v-for="t in [
             { k: 'prompt', l: '提示词' },
@@ -89,7 +89,7 @@ const promptPreview = computed(() => {
             { k: 'variables', l: '变量' },
           ]"
           :key="t.k"
-          class="px-2 h-[26px] rounded-[7px] text-[12px] whitespace-nowrap transition-all duration-200"
+          class="px-2 h-[26px] rounded-[6px] text-[12px] whitespace-nowrap transition-all duration-200"
           :style="
             tab === t.k
               ? 'background:#fff;color:#1C1C1E;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,0.10)'
@@ -101,7 +101,7 @@ const promptPreview = computed(() => {
         </button>
       </div>
       <div class="flex-1"></div>
-      <NButton size="tiny" type="primary" :loading="saving" :disabled="!dirty" @click="emit('save')">
+      <NButton type="primary" :loading="saving" :disabled="!dirty" @click="emit('save')">
         {{ dirty ? '保存' : '已保存' }}
       </NButton>
     </div>
@@ -161,7 +161,7 @@ const promptPreview = computed(() => {
             @update:value="(v: string[]) => patch({ opening_questions: v })"
           />
         </div>
-        <div class="border border-line rounded-lg p-2.5 bg-[#F7F7F9]">
+        <div class="border border-line rounded-[8px] p-2.5 bg-[#F7F7F9]">
           <div class="text-[11.5px] text-muted mb-1">Prompt 预览（变量已高亮占位）</div>
           <pre class="text-[11.5px] text-[rgba(60,60,67,0.7)] whitespace-pre-wrap break-words font-mono max-h-[140px] overflow-y-auto">{{ promptPreview || '（空）' }}</pre>
         </div>
@@ -222,7 +222,6 @@ const promptPreview = computed(() => {
               :value="config.max_tokens"
               :min="1"
               :max="32768"
-              size="small"
               class="!w-full"
               @update:value="(v: number | null) => patch({ max_tokens: v || 2048 })"
             />
@@ -233,7 +232,6 @@ const promptPreview = computed(() => {
               :value="config.max_steps"
               :min="1"
               :max="30"
-              size="small"
               class="!w-full"
               @update:value="(v: number | null) => patch({ max_steps: v || 8 })"
             />
@@ -244,7 +242,7 @@ const promptPreview = computed(() => {
             <span class="text-[12.5px] text-ink">上下文记忆</span>
             <NSwitch
               :value="config.enable_memory"
-              size="small"
+              :round="false"
               @update:value="(v: boolean) => patch({ enable_memory: v })"
             />
           </div>
@@ -252,7 +250,7 @@ const promptPreview = computed(() => {
             <span class="text-[12.5px] text-ink">启用工具调用</span>
             <NSwitch
               :value="config.enable_tools"
-              size="small"
+              :round="false"
               @update:value="(v: boolean) => patch({ enable_tools: v })"
             />
           </div>
@@ -260,7 +258,7 @@ const promptPreview = computed(() => {
             <span class="text-[12.5px] text-ink">启用知识库</span>
             <NSwitch
               :value="config.enable_knowledge"
-              size="small"
+              :round="false"
               @update:value="(v: boolean) => patch({ enable_knowledge: v })"
             />
           </div>
@@ -309,7 +307,7 @@ const promptPreview = computed(() => {
             @update:value="(v: number) => patch({ knowledge_threshold: v })"
           />
         </div>
-        <div class="text-[11.5px] text-muted bg-[#F7F7F9] border border-line rounded-lg p-2.5 leading-5">
+        <div class="text-[11.5px] text-muted bg-[#F7F7F9] border border-line rounded-[8px] p-2.5 leading-5">
           检索流程：用户提问 → 向量化 → 在所选知识库中召回 Top K 片段 → 注入
           <code v-pre>{{knowledge_context}}</code> → 交由模型生成回答并标注来源。
         </div>
@@ -331,7 +329,7 @@ const promptPreview = computed(() => {
           <div
             v-for="k in selectedToolKeys"
             :key="k"
-            class="flex items-center gap-2 border border-line rounded-lg px-2.5 py-2"
+            class="flex items-center gap-2 border border-line rounded-[8px] px-2.5 py-2"
           >
             <LaIcon name="tool" :size="13" class="text-primary" />
             <div class="min-w-0 flex-1">
@@ -340,16 +338,16 @@ const promptPreview = computed(() => {
                 {{ tools.find((t) => t.tool_key === k)?.description }}
               </div>
             </div>
-            <NTag size="tiny" :bordered="false" type="info">{{ k }}</NTag>
+            <NTag :bordered="false" type="info">{{ k }}</NTag>
           </div>
         </div>
-        <div v-else class="text-[12px] text-muted py-4 text-center border border-dashed border-line rounded-lg">
+        <div v-else class="text-[12px] text-muted py-4 text-center border border-dashed border-line rounded-[6px]">
           未选择工具。Function Calling 模式下将不会向模型暴露任何函数。
           <div class="mt-1">
             <RouterLink to="/tools" class="text-primary hover:underline">前往工具管理</RouterLink>
           </div>
         </div>
-        <div class="text-[11.5px] text-muted bg-[rgba(255,149,0,0.12)] border border-[#FDE68A] rounded-lg p-2.5 leading-5">
+        <div class="text-[11.5px] text-muted bg-[rgba(255,149,0,0.12)] border border-[#FDE68A] rounded-[6px] p-2.5 leading-5">
           工具返回内容视为不可信输入，不会提升为系统指令；每次调用均受超时与最大调用次数限制。
         </div>
       </template>
@@ -360,7 +358,7 @@ const promptPreview = computed(() => {
           自动从提示词中识别到的变量（保留名 query / knowledge_context 由系统注入）：
         </div>
         <div class="flex flex-wrap gap-1.5">
-          <NTag v-for="v in detectedVars" :key="v" size="small" :bordered="false" type="info">{{ v }}</NTag>
+          <NTag v-for="v in detectedVars" :key="v" :bordered="false" type="info">{{ v }}</NTag>
           <span v-if="!detectedVars.length" class="text-[12px] text-muted">未检测到变量</span>
         </div>
         <div class="pt-2 space-y-2">
@@ -369,11 +367,10 @@ const promptPreview = computed(() => {
           <div
             v-for="(v, i) in config.variables"
             :key="i"
-            class="flex items-center gap-2 border border-line rounded-lg p-2"
+            class="flex items-center gap-2 border border-line rounded-[8px] p-2"
           >
             <NInput
               :value="v.name"
-              size="tiny"
               placeholder="变量名"
               class="!w-[110px]"
               @update:value="(val: string) => {
@@ -384,7 +381,6 @@ const promptPreview = computed(() => {
             />
             <NInput
               :value="String(v.default ?? '')"
-              size="tiny"
               placeholder="默认值"
               @update:value="(val: string) => {
                 const list = [...(config.variables || [])]
@@ -393,7 +389,6 @@ const promptPreview = computed(() => {
               }"
             />
             <NButton
-              size="tiny"
               quaternary
               @click="patch({ variables: (config.variables || []).filter((_, idx) => idx !== i) })"
             >
@@ -401,7 +396,6 @@ const promptPreview = computed(() => {
             </NButton>
           </div>
           <NButton
-            size="tiny"
             dashed
             block
             @click="patch({ variables: [...(config.variables || []), { name: '', type: 'string', default: '', description: '' }] })"

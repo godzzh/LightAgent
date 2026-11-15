@@ -2,43 +2,44 @@
 import { onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import * as echarts from 'echarts'
 
-/* 图表统一按 iOS 视觉规范渲染：系统色序列、SF 字体、极淡网格 */
-const IOS_FONT =
+/* 图表统一按品牌规范渲染：品牌色序列、系统字体、极淡网格。
+   文字颜色统一 #59595e / #6e6e73（白底对比度 ≥4.5:1，符合 WCAG AA）。 */
+const UI_FONT =
   '-apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, "PingFang SC", "Microsoft YaHei", sans-serif'
 
-echarts.registerTheme('lightagent-ios', {
-  color: ['#007AFF', '#34C759', '#FF9500', '#AF52DE', '#30B0C7', '#5856D6', '#FF3B30', '#8E8E93'],
+echarts.registerTheme('lightagent', {
+  color: ['#184CFF', '#34C759', '#FF9500', '#AF52DE', '#30B0C7', '#5856D6', '#FF3B30', '#8E8E93'],
   backgroundColor: 'transparent',
-  textStyle: { fontFamily: IOS_FONT, fontSize: 11, color: 'rgba(60,60,67,0.6)' },
+  textStyle: { fontFamily: UI_FONT, fontSize: 11, color: '#59595e' },
   categoryAxis: {
     axisLine: { lineStyle: { color: 'rgba(60,60,67,0.13)' } },
     axisTick: { show: false },
-    axisLabel: { color: 'rgba(60,60,67,0.5)', fontSize: 11 },
+    axisLabel: { color: '#6e6e73', fontSize: 11 },
     splitLine: { show: false },
   },
   valueAxis: {
     axisLine: { show: false },
     axisTick: { show: false },
-    axisLabel: { color: 'rgba(60,60,67,0.5)', fontSize: 11 },
+    axisLabel: { color: '#6e6e73', fontSize: 11 },
     splitLine: { lineStyle: { color: 'rgba(60,60,67,0.07)' } },
   },
   tooltip: {
     backgroundColor: 'rgba(28,28,30,0.94)',
     borderWidth: 0,
     padding: [7, 10],
-    textStyle: { color: '#fff', fontSize: 12, fontFamily: IOS_FONT },
-    extraCssText: 'border-radius:10px;box-shadow:0 8px 28px -8px rgba(0,0,0,0.4);',
+    textStyle: { color: '#fff', fontSize: 12, fontFamily: UI_FONT },
+    extraCssText: 'border-radius:6px;box-shadow:0 8px 28px -8px rgba(0,0,0,0.4);',
   },
   legend: {
-    textStyle: { color: 'rgba(60,60,67,0.6)', fontSize: 11, fontFamily: IOS_FONT },
+    textStyle: { color: '#59595e', fontSize: 11, fontFamily: UI_FONT },
     itemWidth: 8,
     itemHeight: 8,
   },
 })
 
 const props = withDefaults(
-  defineProps<{ option: echarts.EChartsCoreOption; height?: string; loading?: boolean }>(),
-  { height: '240px', loading: false },
+  defineProps<{ option: echarts.EChartsCoreOption; height?: string; loading?: boolean; label?: string }>(),
+  { height: '240px', loading: false, label: '' },
 )
 
 const el = ref<HTMLDivElement | null>(null)
@@ -55,7 +56,7 @@ function setLoading(v: boolean) {
   if (v) {
     chart.value.showLoading('default', {
       text: '',
-      color: '#007AFF',
+      color: '#184CFF',
       maskColor: 'rgba(255,255,255,0.7)',
       spinnerRadius: 9,
       lineWidth: 2,
@@ -67,7 +68,7 @@ function setLoading(v: boolean) {
 
 onMounted(() => {
   if (!el.value) return
-  chart.value = echarts.init(el.value, 'lightagent-ios')
+  chart.value = echarts.init(el.value, 'lightagent')
   render()
   if (props.loading) setLoading(true)
   observer = new ResizeObserver(() => chart.value?.resize())
@@ -84,5 +85,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div ref="el" :style="{ height, width: '100%' }"></div>
+  <div
+    ref="el"
+    role="img"
+    :aria-label="label || '数据图表'"
+    :style="{ height, width: '100%' }"
+  ></div>
 </template>

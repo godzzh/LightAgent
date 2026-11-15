@@ -5,7 +5,6 @@ import {
   NButton,
   NInput,
   NInputNumber,
-  NModal,
   NSelect,
   NSpin,
   NSwitch,
@@ -19,6 +18,7 @@ import LaIcon from '@/components/common/LaIcon.vue'
 import { knowledgeApi, modelApi } from '@/api/knowledge'
 import type { Dataset, ModelConfig } from '@/types'
 import { formatDate } from '@/utils/format'
+import VModal from '@/components/common/VModal/index.vue'
 
 const router = useRouter()
 const message = useMessage()
@@ -94,10 +94,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="la-page max-w-[1400px]">
+  <div class="la-page">
     <PageHeader title="知识库" subtitle="上传文档、切片向量化，为 Agent 提供 RAG 能力">
       <template #actions>
-        <NButton size="small" type="primary" @click="showCreate = true">
+        <NButton type="primary" @click="showCreate = true">
           <template #icon><LaIcon name="plus" :size="14" /></template>
           创建知识库
         </NButton>
@@ -105,11 +105,11 @@ onMounted(async () => {
     </PageHeader>
 
     <div class="flex items-center gap-2 mb-3">
-      <NInput v-model:value="keyword" placeholder="搜索知识库" size="small" clearable class="la-search !w-[240px]"
+      <NInput v-model:value="keyword" placeholder="搜索知识库"  clearable class="la-search !w-[240px]"
         @keyup.enter="load" @clear="load">
         <template #prefix><LaIcon name="search" :size="14" class="text-[rgba(60,60,67,0.38)]" /></template>
       </NInput>
-      <NButton size="small" @click="load">查询</NButton>
+      <NButton @click="load">查询</NButton>
     </div>
 
     <div v-if="loading" class="la-card p-12 flex justify-center"><NSpin /></div>
@@ -121,7 +121,7 @@ onMounted(async () => {
       title="还没有知识库"
       description="创建一个知识库并上传 PDF / DOCX / TXT 文档，完成索引后即可被 Agent 检索"
     >
-      <NButton type="primary" size="small" @click="showCreate = true">创建知识库</NButton>
+      <NButton type="primary" @click="showCreate = true">创建知识库</NButton>
     </EmptyState>
 
     <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
@@ -141,7 +141,12 @@ onMounted(async () => {
               {{ d.description || '暂无描述' }}
             </div>
           </div>
-          <button class="opacity-0 group-hover:opacity-100 text-muted hover:text-[#FF3B30]" @click.stop="confirmDelete(d)">
+          <button
+            type="button"
+            class="la-icon-btn-danger"
+            :aria-label="'删除'"
+            @click.stop="confirmDelete(d)"
+          >
             <LaIcon name="trash" :size="14" />
           </button>
         </div>
@@ -159,7 +164,7 @@ onMounted(async () => {
       </div>
     </div>
 
-    <NModal v-model:show="showCreate" preset="card" title="创建知识库" class="!w-[560px]" :bordered="false">
+    <VModal v-model:show="showCreate" title="创建知识库" :width="560">
       <div class="space-y-3">
         <div>
           <div class="text-[12.5px] text-muted mb-1">名称</div>
@@ -186,11 +191,11 @@ onMounted(async () => {
         <div class="grid grid-cols-2 gap-3">
           <div>
             <div class="text-[12.5px] text-muted mb-1">Chunk Size</div>
-            <NInputNumber v-model:value="form.chunk_size" :min="50" :max="4000" :step="50" size="small" class="!w-full" />
+            <NInputNumber v-model:value="form.chunk_size" :min="50" :max="4000" :step="50" class="!w-full" />
           </div>
           <div>
             <div class="text-[12.5px] text-muted mb-1">Chunk Overlap</div>
-            <NInputNumber v-model:value="form.chunk_overlap" :min="0" :max="1000" :step="10" size="small" class="!w-full" />
+            <NInputNumber v-model:value="form.chunk_overlap" :min="0" :max="1000" :step="10" class="!w-full" />
           </div>
         </div>
         <div>
@@ -211,19 +216,19 @@ onMounted(async () => {
         </div>
         <div class="flex items-center gap-6">
           <label class="flex items-center gap-2 text-[12.5px] text-ink">
-            <NSwitch v-model:value="form.keep_heading" size="small" /> 保留标题
+            <NSwitch v-model:value="form.keep_heading" :round="false" /> 保留标题
           </label>
           <label class="flex items-center gap-2 text-[12.5px] text-ink">
-            <NSwitch v-model:value="form.clean_whitespace" size="small" /> 清理空白字符
+            <NSwitch v-model:value="form.clean_whitespace" :round="false" /> 清理空白字符
           </label>
         </div>
       </div>
       <template #footer>
         <div class="flex justify-end gap-2">
-          <NButton size="small" @click="showCreate = false">取消</NButton>
-          <NButton size="small" type="primary" :loading="saving" @click="create">创建</NButton>
+          <NButton @click="showCreate = false">取消</NButton>
+          <NButton type="primary" :loading="saving" @click="create">创建</NButton>
         </div>
       </template>
-    </NModal>
+    </VModal>
   </div>
 </template>

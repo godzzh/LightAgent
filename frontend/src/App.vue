@@ -10,39 +10,40 @@ import {
 } from 'naive-ui'
 import { RouterView } from 'vue-router'
 
-/* iOS 系统色板（HIG 明色模式） */
-const IOS_BLUE = '#007AFF'
-const IOS_TEXT = '#1C1C1E'
-const IOS_TEXT_2 = 'rgba(60, 60, 67, 0.6)'
-const IOS_SEPARATOR = 'rgba(60, 60, 67, 0.13)'
-const IOS_FILL = 'rgba(118, 118, 128, 0.08)'
+/* 品牌色板（对齐参考项目 Admin 后台：主色 #184cff） */
+const BRAND = '#184CFF'
+const BRAND_HOVER = '#4770FF'
+const BRAND_PRESSED = '#1038D6'
+const TEXT = '#1F2329'
+const TEXT_2 = '#4E5969'
+const BORDER = '#E5EAF3'
 
 const themeOverrides: GlobalThemeOverrides = {
   common: {
-    // 品牌色：iOS 系统蓝
-    primaryColor: IOS_BLUE,
-    primaryColorHover: '#3395FF',
-    primaryColorPressed: '#0062CC',
-    primaryColorSuppl: IOS_BLUE,
+    // 品牌色：#184cff
+    primaryColor: BRAND,
+    primaryColorHover: BRAND_HOVER,
+    primaryColorPressed: BRAND_PRESSED,
+    primaryColorSuppl: BRAND,
 
     // 语义色
-    infoColor: IOS_BLUE,
+    infoColor: BRAND,
     successColor: '#34C759',
     warningColor: '#FF9500',
     errorColor: '#FF3B30',
 
-    // 形状：iOS 连续圆角
-    borderRadius: '10px',
-    borderRadiusSmall: '8px',
+    // 形状：统一 4px 圆角
+    borderRadius: '4px',
+    borderRadiusSmall: '4px',
 
     // 文本与描边
-    textColorBase: IOS_TEXT,
-    textColor1: IOS_TEXT,
-    textColor2: IOS_TEXT_2,
-    textColor3: 'rgba(60, 60, 67, 0.38)',
-    borderColor: IOS_SEPARATOR,
-    dividerColor: IOS_SEPARATOR,
-    placeholderColor: 'rgba(60, 60, 67, 0.38)',
+    textColorBase: TEXT,
+    textColor1: TEXT,
+    textColor2: TEXT_2,
+    textColor3: '#86909C',
+    borderColor: BORDER,
+    dividerColor: BORDER,
+    placeholderColor: '#86909C',
 
     // 字体
     fontFamily:
@@ -52,39 +53,39 @@ const themeOverrides: GlobalThemeOverrides = {
     fontWeightStrong: '600',
 
     // 表面层次
-    bodyColor: '#F2F2F7',
+    bodyColor: '#F5F7FA',
     cardColor: '#FFFFFF',
     modalColor: '#FFFFFF',
     popoverColor: '#FFFFFF',
     tableColor: '#FFFFFF',
     inputColor: '#FFFFFF',
-    hoverColor: 'rgba(120, 120, 128, 0.08)',
+    hoverColor: 'rgba(24, 76, 255, 0.06)',
 
     // 阴影：iOS 极轻
-    boxShadow1: '0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -12px rgba(0,0,0,0.10)',
-    boxShadow2: '0 4px 12px rgba(0,0,0,0.08), 0 16px 40px -16px rgba(0,0,0,0.16)',
-    boxShadow3: '0 8px 32px -8px rgba(0,0,0,0.18)',
+    boxShadow1: '0 4px 20px rgba(15,23,42,0.06)',
+    boxShadow2: '0 8px 28px rgba(15,23,42,0.10)',
+    boxShadow3: '0 24px 70px rgba(15,23,42,0.18)',
   },
 
   Layout: {
-    color: '#F2F2F7',
-    siderColor: 'rgba(255,255,255,0.72)',
+    color: '#F5F7FA',
+    siderColor: '#F8F9FF',
   },
 
   Button: {
-    borderRadiusTiny: '8px',
-    borderRadiusSmall: '9px',
-    borderRadiusMedium: '10px',
-    borderRadiusLarge: '12px',
+    borderRadiusTiny: '4px',
+    borderRadiusSmall: '4px',
+    borderRadiusMedium: '4px',
+    borderRadiusLarge: '4px',
     fontWeight: '500',
     textColorPrimary: '#FFFFFF',
     textColorHoverPrimary: '#FFFFFF',
     textColorPressedPrimary: '#FFFFFF',
     textColorFocusPrimary: '#FFFFFF',
-    colorPrimary: IOS_BLUE,
-    colorHoverPrimary: '#3395FF',
-    colorPressedPrimary: '#0062CC',
-    colorFocusPrimary: '#3395FF',
+    colorPrimary: BRAND,
+    colorHoverPrimary: BRAND_HOVER,
+    colorPressedPrimary: BRAND_PRESSED,
+    colorFocusPrimary: BRAND_HOVER,
     borderPrimary: '1px solid transparent',
     borderHoverPrimary: '1px solid transparent',
     borderPressedPrimary: '1px solid transparent',
@@ -96,61 +97,61 @@ const themeOverrides: GlobalThemeOverrides = {
     border: '1px solid rgba(60,60,67,0.13)',
     borderHover: '1px solid rgba(60,60,67,0.18)',
     borderPressed: '1px solid rgba(60,60,67,0.22)',
-    textColor: IOS_TEXT,
-    textColorHover: IOS_TEXT,
-    textColorPressed: IOS_TEXT,
+    textColor: TEXT,
+    textColorHover: TEXT,
+    textColorPressed: TEXT,
   },
 
   Input: {
-    borderRadius: '10px',
+    borderRadius: '4px',
     heightMedium: '36px',
     heightLarge: '42px',
     color: '#FFFFFF',
     colorFocus: '#FFFFFF',
-    border: `1px solid ${IOS_SEPARATOR}`,
-    borderHover: '1px solid rgba(0,122,255,0.45)',
-    borderFocus: `1px solid ${IOS_BLUE}`,
-    boxShadowFocus: '0 0 0 3px rgba(0,122,255,0.16)',
-    placeholderColor: 'rgba(60,60,67,0.38)',
+    border: `1px solid ${BORDER}`,
+    borderHover: '1px solid #8EADFF',
+    borderFocus: `1px solid ${BRAND}`,
+    boxShadowFocus: '0 0 0 3px rgba(24,76,255,0.10)',
+    placeholderColor: '#86909C',
   },
 
   InternalSelection: {
-    borderRadius: '10px',
+    borderRadius: '4px',
     heightMedium: '36px',
     heightLarge: '42px',
-    border: `1px solid ${IOS_SEPARATOR}`,
-    borderHover: '1px solid rgba(0,122,255,0.45)',
-    borderActive: `1px solid ${IOS_BLUE}`,
-    borderFocus: `1px solid ${IOS_BLUE}`,
-    boxShadowActive: '0 0 0 3px rgba(0,122,255,0.16)',
-    boxShadowFocus: '0 0 0 3px rgba(0,122,255,0.16)',
+    border: `1px solid ${BORDER}`,
+    borderHover: '1px solid #8EADFF',
+    borderActive: `1px solid ${BRAND}`,
+    borderFocus: `1px solid ${BRAND}`,
+    boxShadowActive: '0 0 0 3px rgba(24,76,255,0.10)',
+    boxShadowFocus: '0 0 0 3px rgba(24,76,255,0.10)',
   },
 
   Card: {
-    borderRadius: '18px',
+    borderRadius: '4px',
     color: '#FFFFFF',
-    borderColor: 'rgba(0,0,0,0.03)',
+    borderColor: BORDER,
     paddingMedium: '18px',
   },
 
   DataTable: {
-    thColor: 'transparent',
-    thTextColor: IOS_TEXT_2,
+    thColor: '#F7F9FC',
+    thTextColor: '#64748B',
     thFontWeight: '500',
-    borderRadius: '18px',
+    borderRadius: '4px',
     tdColor: '#FFFFFF',
-    tdColorHover: 'rgba(120,120,128,0.06)',
-    borderColor: IOS_SEPARATOR,
+    tdColorHover: '#F8FAFF',
+    borderColor: BORDER,
     thPaddingMedium: '10px 14px',
     tdPaddingMedium: '12px 14px',
   },
 
   Modal: {
-    borderRadius: '20px',
+    borderRadius: '4px',
   },
 
   Drawer: {
-    borderRadius: '20px 0 0 20px',
+    borderRadius: '4px 0 0 4px',
   },
 
   Tag: {
@@ -162,42 +163,45 @@ const themeOverrides: GlobalThemeOverrides = {
   Tabs: {
     tabFontWeightActive: '600',
     tabFontWeight: '500',
-    tabTextColorActiveLine: IOS_TEXT,
-    barColor: IOS_BLUE,
-    tabBorderColor: IOS_SEPARATOR,
+    tabTextColorActiveLine: TEXT,
+    barColor: BRAND,
+    tabBorderColor: BORDER,
   },
 
   Switch: {
-    railColorActive: '#34C759',
+    // railColorActive 默认取 common.primaryColor；此前硬编码绿色导致与主题不一致。
+    // railBorderRadius* / buttonBorderRadius* 默认取 common.borderRadius（4px），
+    // 配合模板里的 :round="false" 即为方形轨道。
+    railColorActive: BRAND,
     railColor: 'rgba(120,120,128,0.16)',
   },
 
   Popover: {
-    borderRadius: '14px',
+    borderRadius: '4px',
     padding: '6px',
   },
 
   Dropdown: {
-    borderRadius: '14px',
+    borderRadius: '4px',
     optionHeightMedium: '34px',
     fontSizeMedium: '13.5px',
   },
 
   Pagination: {
-    itemBorderRadius: '8px',
+    itemBorderRadius: '4px',
   },
 
   Message: {
-    borderRadius: '14px',
+    borderRadius: '4px',
     boxShadow: '0 8px 32px -8px rgba(0,0,0,0.18)',
   },
 
   Notification: {
-    borderRadius: '16px',
+    borderRadius: '4px',
   },
 
   Empty: {
-    textColor: IOS_TEXT_2,
+    textColor: TEXT_2,
   },
 }
 </script>

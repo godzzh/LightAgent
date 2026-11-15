@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { NButton, NInput, NModal, NSpin, useDialog, useMessage } from 'naive-ui'
+import { NButton, NInput, NSpin, useDialog, useMessage } from 'naive-ui'
 import PageHeader from '@/components/common/PageHeader.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import LaIcon from '@/components/common/LaIcon.vue'
 import { workflowApi } from '@/api/workflows'
 import type { Workflow } from '@/types'
 import { formatDate } from '@/utils/format'
+import VModal from '@/components/common/VModal/index.vue'
 
 const router = useRouter()
 const message = useMessage()
@@ -64,10 +65,10 @@ onMounted(load)
 </script>
 
 <template>
-  <div class="la-page max-w-[1300px]">
+  <div class="la-page">
     <PageHeader title="工作流" subtitle="可视化编排节点，后端 DAG 引擎真实执行">
       <template #actions>
-        <NButton size="small" type="primary" @click="showCreate = true">
+        <NButton type="primary" @click="showCreate = true">
           <template #icon><LaIcon name="plus" :size="14" /></template>
           创建工作流
         </NButton>
@@ -83,7 +84,7 @@ onMounted(load)
       title="还没有工作流"
       description="从 Start → LLM → Answer 搭一条最小链路，体验真实的节点执行与变量传递"
     >
-      <NButton type="primary" size="small" @click="showCreate = true">创建工作流</NButton>
+      <NButton type="primary" @click="showCreate = true">创建工作流</NButton>
     </EmptyState>
 
     <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
@@ -103,7 +104,12 @@ onMounted(load)
               {{ wf.description || '暂无描述' }}
             </div>
           </div>
-          <button class="opacity-0 group-hover:opacity-100 text-muted hover:text-[#FF3B30]" @click.stop="remove(wf)">
+          <button
+            type="button"
+            class="la-icon-btn-danger"
+            :aria-label="'删除'"
+            @click.stop="remove(wf)"
+          >
             <LaIcon name="trash" :size="14" />
           </button>
         </div>
@@ -115,7 +121,7 @@ onMounted(load)
       </div>
     </div>
 
-    <NModal v-model:show="showCreate" preset="card" title="创建工作流" class="!w-[480px]" :bordered="false">
+    <VModal v-model:show="showCreate" title="创建工作流" :width="480">
       <div class="space-y-3">
         <div>
           <div class="text-[12.5px] text-muted mb-1">名称</div>
@@ -131,10 +137,10 @@ onMounted(load)
       </div>
       <template #footer>
         <div class="flex justify-end gap-2">
-          <NButton size="small" @click="showCreate = false">取消</NButton>
-          <NButton size="small" type="primary" :loading="creating" @click="create">创建并编辑</NButton>
+          <NButton @click="showCreate = false">取消</NButton>
+          <NButton type="primary" :loading="creating" @click="create">创建并编辑</NButton>
         </div>
       </template>
-    </NModal>
+    </VModal>
   </div>
 </template>

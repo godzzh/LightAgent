@@ -33,7 +33,7 @@ const statusText = computed(() => {
 const statusStyle = computed(() => {
   switch (props.run?.status) {
     case 'running':
-      return 'background:rgba(0,122,255,0.12);color:#007AFF'
+      return 'background:rgba(24,76,255,0.12);color:#184CFF'
     case 'succeeded':
       return 'background:rgba(52,199,89,0.14);color:#248A3D'
     case 'failed':
@@ -61,25 +61,25 @@ const statusStyle = computed(() => {
     <div class="flex-1 overflow-y-auto p-4 space-y-4 text-[12px]">
       <!-- 指标 -->
       <div class="grid grid-cols-2 gap-2">
-        <div class="rounded-[12px] p-2.5" style="background: rgba(118, 118, 128, 0.07)">
+        <div class="rounded-[6px] p-2.5" style="background: rgba(118, 118, 128, 0.07)">
           <div class="text-[11px] text-muted">模型</div>
           <div class="text-[12.5px] text-ink truncate mt-0.5 font-medium">
             {{ run?.model || config.model_name || '—' }}
           </div>
         </div>
-        <div class="rounded-[12px] p-2.5" style="background: rgba(118, 118, 128, 0.07)">
+        <div class="rounded-[6px] p-2.5" style="background: rgba(118, 118, 128, 0.07)">
           <div class="text-[11px] text-muted">执行模式</div>
           <div class="text-[12.5px] text-ink mt-0.5 font-medium">
             {{ (run?.mode || config.mode) === 'react' ? 'ReAct' : 'Function Calling' }}
           </div>
         </div>
-        <div class="rounded-[12px] p-2.5" style="background: rgba(118, 118, 128, 0.07)">
+        <div class="rounded-[6px] p-2.5" style="background: rgba(118, 118, 128, 0.07)">
           <div class="text-[11px] text-muted">耗时</div>
           <div class="text-[12.5px] text-ink mt-0.5 font-medium tabular-nums">
             {{ formatDuration(run?.durationMs) }}
           </div>
         </div>
-        <div class="rounded-[12px] p-2.5" style="background: rgba(118, 118, 128, 0.07)">
+        <div class="rounded-[6px] p-2.5" style="background: rgba(118, 118, 128, 0.07)">
           <div class="text-[11px] text-muted">Token</div>
           <div class="text-[12.5px] text-ink mt-0.5 font-medium tabular-nums">
             {{ run?.usage?.total_tokens || 0 }}
@@ -100,7 +100,7 @@ const statusStyle = computed(() => {
           <details
             v-for="(k, i) in run.knowledge"
             :key="i"
-            class="rounded-[10px] px-2.5 py-2"
+            class="rounded-[6px] px-2.5 py-2"
             style="background: rgba(118, 118, 128, 0.07)"
           >
             <summary class="cursor-pointer text-[11.5px] text-[rgba(60,60,67,0.72)]">
@@ -113,7 +113,7 @@ const statusStyle = computed(() => {
         </div>
         <div
           v-else
-          class="text-[11.5px] text-muted rounded-[10px] px-2.5 py-2.5"
+          class="text-[11.5px] text-muted rounded-[6px] px-2.5 py-2.5"
           style="background: rgba(118, 118, 128, 0.06)"
         >
           本次未召回知识片段
@@ -130,7 +130,7 @@ const statusStyle = computed(() => {
           <div
             v-for="(t, i) in run.toolCalls"
             :key="i"
-            class="rounded-[10px] p-2.5"
+            class="rounded-[6px] p-2.5"
             style="background: rgba(118, 118, 128, 0.07)"
           >
             <div class="flex items-center justify-between">
@@ -156,7 +156,7 @@ const statusStyle = computed(() => {
         </div>
         <div
           v-else
-          class="text-[11.5px] text-muted rounded-[10px] px-2.5 py-2.5"
+          class="text-[11.5px] text-muted rounded-[6px] px-2.5 py-2.5"
           style="background: rgba(118, 118, 128, 0.06)"
         >
           本次未调用工具
@@ -165,8 +165,10 @@ const statusStyle = computed(() => {
 
       <div
         v-if="run?.error"
-        class="rounded-[10px] p-2.5 text-[11.5px]"
-        style="background: rgba(255, 59, 48, 0.1); color: #d70015"
+        role="alert"
+        aria-live="polite"
+        class="rounded-[6px] p-2.5 text-[11.5px]"
+        style="background: var(--la-error-bg); color: var(--la-error-text); border: 1px solid var(--la-error-border)"
       >
         {{ run.error }}
       </div>

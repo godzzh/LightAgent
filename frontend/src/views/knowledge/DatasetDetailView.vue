@@ -170,14 +170,14 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="la-page max-w-[1200px]">
+  <div class="la-page">
     <PageHeader
       :title="dataset?.name || '知识库详情'"
       :subtitle="dataset?.description || '管理文档、切片与检索测试'"
     >
       <template #actions>
-        <NButton size="small" @click="router.push('/knowledge')">返回列表</NButton>
-        <NButton size="small" type="primary" :loading="uploading" @click="pickFile">
+        <NButton @click="router.push('/knowledge')">返回列表</NButton>
+        <NButton type="primary" :loading="uploading" @click="pickFile">
           <template #icon><LaIcon name="upload" :size="14" /></template>
           上传文档
         </NButton>
@@ -217,11 +217,11 @@ onBeforeUnmount(() => {
             title="还没有文档"
             description="支持 PDF / DOCX / TXT / Markdown / HTML，上传后自动解析切片与向量化"
           >
-            <NButton size="small" type="primary" :loading="uploading" @click="pickFile">上传文档</NButton>
+            <NButton type="primary" :loading="uploading" @click="pickFile">上传文档</NButton>
           </EmptyState>
           <div v-else class="divide-y divide-[rgba(118,118,128,0.08)] pb-2">
             <div v-for="doc in documents" :key="doc.id" class="flex flex-wrap items-center gap-3 py-2.5">
-              <span class="w-8 h-8 rounded-lg bg-[#F7F7F9] text-[#8E8E93] flex items-center justify-center">
+              <span class="w-8 h-8 rounded-[6px] bg-[#F7F7F9] text-[#8E8E93] flex items-center justify-center">
                 <LaIcon name="book" :size="15" />
               </span>
               <div class="min-w-0 flex-1">
@@ -236,13 +236,13 @@ onBeforeUnmount(() => {
                 <div v-if="doc.error" class="text-[11px] text-[#FF3B30] mt-0.5 max-w-md truncate">{{ doc.error }}</div>
               </div>
               <StatusTag :status="doc.status" />
-              <NButton size="tiny" quaternary :disabled="doc.status !== 'completed'" @click="openSegments(doc)">
+              <NButton quaternary :disabled="doc.status !== 'completed'" @click="openSegments(doc)">
                 切片
               </NButton>
-              <NButton size="tiny" quaternary @click="reindex(doc)">
+              <NButton quaternary @click="reindex(doc)">
                 <template #icon><LaIcon name="refresh" :size="12" /></template>
               </NButton>
-              <NButton size="tiny" quaternary @click="removeDoc(doc)">
+              <NButton quaternary @click="removeDoc(doc)">
                 <template #icon><LaIcon name="trash" :size="12" /></template>
               </NButton>
             </div>
@@ -258,13 +258,13 @@ onBeforeUnmount(() => {
               </div>
               <div class="w-[100px]">
                 <div class="text-[12.5px] text-muted mb-1">Top K</div>
-                <NInputNumber v-model:value="topK" :min="1" :max="20" size="small" class="!w-full" />
+                <NInputNumber v-model:value="topK" :min="1" :max="20" class="!w-full" />
               </div>
               <div class="w-[120px]">
                 <div class="text-[12.5px] text-muted mb-1">阈值</div>
-                <NInputNumber v-model:value="threshold" :min="0" :max="1" :step="0.05" size="small" class="!w-full" />
+                <NInputNumber v-model:value="threshold" :min="0" :max="1" :step="0.05" class="!w-full" />
               </div>
-              <NButton type="primary" size="small" :loading="retrieving" @click="doRetrieve">检索</NButton>
+              <NButton type="primary" :loading="retrieving" @click="doRetrieve">检索</NButton>
             </div>
 
             <div v-if="retrieveMsg" class="text-[11.5px] text-[#C86A00] mt-2">{{ retrieveMsg }}</div>
@@ -278,13 +278,13 @@ onBeforeUnmount(() => {
               description="输入问题后执行检索，结果会展示文档来源、匹配文本与相似度"
             />
             <div v-else class="space-y-2 mt-3">
-              <div v-for="(h, i) in hits" :key="h.segment_id" class="border border-line rounded-lg p-3">
+              <div v-for="(h, i) in hits" :key="h.segment_id" class="border border-line rounded-[8px] p-3">
                 <div class="flex items-center justify-between gap-2">
                   <div class="text-[12.5px] font-medium text-ink">
                     [{{ i + 1 }}] {{ h.document_name }}
                     <span class="text-[11px] text-muted font-normal">#{{ h.position }}</span>
                   </div>
-                  <span class="text-[11.5px] font-mono text-[#007AFF]">{{ h.score.toFixed(4) }}</span>
+                  <span class="text-[11.5px] font-mono text-[#184CFF]">{{ h.score.toFixed(4) }}</span>
                 </div>
                 <div class="text-[12.5px] text-[rgba(60,60,67,0.7)] mt-1.5 whitespace-pre-wrap line-clamp-5">{{ h.content }}</div>
               </div>
@@ -295,19 +295,19 @@ onBeforeUnmount(() => {
         <NTabPane name="settings" tab="切片配置">
           <div class="pb-6 pt-1 max-w-lg text-[12.5px] text-[rgba(60,60,67,0.7)] leading-6">
             <div class="grid grid-cols-2 gap-3">
-              <div class="border border-line rounded-lg p-3">
+              <div class="border border-line rounded-[8px] p-3">
                 <div class="text-[11.5px] text-muted">切片策略</div>
                 <div class="text-ink mt-0.5">{{ dataset?.split_strategy }}</div>
               </div>
-              <div class="border border-line rounded-lg p-3">
+              <div class="border border-line rounded-[8px] p-3">
                 <div class="text-[11.5px] text-muted">Chunk Size / Overlap</div>
                 <div class="text-ink mt-0.5">{{ dataset?.chunk_size }} / {{ dataset?.chunk_overlap }}</div>
               </div>
-              <div class="border border-line rounded-lg p-3">
+              <div class="border border-line rounded-[8px] p-3">
                 <div class="text-[11.5px] text-muted">保留标题</div>
                 <div class="text-ink mt-0.5">{{ dataset?.keep_heading ? '是' : '否' }}</div>
               </div>
-              <div class="border border-line rounded-lg p-3">
+              <div class="border border-line rounded-[8px] p-3">
                 <div class="text-[11.5px] text-muted">清理空白</div>
                 <div class="text-ink mt-0.5">{{ dataset?.clean_whitespace ? '是' : '否' }}</div>
               </div>
@@ -325,7 +325,7 @@ onBeforeUnmount(() => {
       <NDrawerContent title="文档切片" closable>
         <div v-if="segLoading" class="py-10 flex justify-center"><NSpin /></div>
         <div v-else class="space-y-2">
-          <div v-for="s in segments" :key="s.id" class="border border-line rounded-lg p-3">
+          <div v-for="s in segments" :key="s.id" class="border border-line rounded-[8px] p-3">
             <div class="flex items-center justify-between text-[11.5px] text-muted">
               <span>#{{ s.position }} · {{ s.tokens }} tokens</span>
               <span v-if="s.has_embedding" class="text-[#248A3D]">已向量化</span>

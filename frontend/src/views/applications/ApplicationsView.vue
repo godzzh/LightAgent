@@ -7,7 +7,6 @@ import {
   NDropdown,
   NEmpty,
   NInput,
-  NModal,
   NSelect,
   NSpin,
   NTag,
@@ -22,6 +21,7 @@ import { appApi } from '@/api/auth'
 import { modelApi } from '@/api/knowledge'
 import type { Application, ModelConfig } from '@/types'
 import { formatDate, truncate } from '@/utils/format'
+import VModal from '@/components/common/VModal/index.vue'
 
 const router = useRouter()
 const message = useMessage()
@@ -203,11 +203,11 @@ const columns = computed<DataTableColumns<Application>>(() => [
         h(
           'div',
           {
-            class: 'w-8 h-8 rounded-[9px] flex items-center justify-center text-white shrink-0',
+            class: 'w-8 h-8 rounded-[6px] flex items-center justify-center text-white shrink-0',
             style:
               row.app_type === 'workflow'
                 ? 'background:linear-gradient(160deg,#7B79E8 0%,#5856D6 100%);box-shadow:0 1px 3px rgba(0,0,0,0.12)'
-                : 'background:linear-gradient(160deg,#4BA3FF 0%,#007AFF 100%);box-shadow:0 1px 3px rgba(0,0,0,0.12)',
+                : 'background:linear-gradient(160deg,#6B8CFF 0%,#184CFF 100%);box-shadow:0 1px 3px rgba(0,0,0,0.12)',
           },
           [h(LaIcon, { name: row.app_type === 'workflow' ? 'flow' : 'robot', size: 15, strokeWidth: 2 })],
         ),
@@ -267,7 +267,7 @@ const columns = computed<DataTableColumns<Application>>(() => [
       h(
         NDropdown,
         { options: actionOptions(row), trigger: 'click', onSelect: (k: string) => handleAction(k, row) },
-        { default: () => h(NButton, { size: 'tiny', quaternary: true }, { icon: () => h(LaIcon, { name: 'more' }) }) },
+        { default: () => h(NButton, { quaternary: true }, { icon: () => h(LaIcon, { name: 'more' }) }) },
       ),
   },
 ])
@@ -281,7 +281,7 @@ onMounted(async () => {
   <div class="la-page">
     <PageHeader title="应用管理" subtitle="创建、调试与发布你的 AI 应用">
       <template #actions>
-        <NButton type="primary" size="small" @click="showCreate = true">
+        <NButton type="primary" @click="showCreate = true">
           <template #icon><LaIcon name="plus" :size="14" /></template>
           新建应用
         </NButton>
@@ -294,7 +294,7 @@ onMounted(async () => {
           v-model:value="keyword"
           placeholder="搜索应用名称"
           clearable
-          size="small"
+
           class="la-search !w-[240px]"
           @keyup.enter="((page = 1), load())"
           @clear="((page = 1), load())"
@@ -303,7 +303,6 @@ onMounted(async () => {
         </NInput>
         <NSelect
           :options="typeOptions"
-          size="small"
           class="!w-[140px]"
           :value="typeFilter || ''"
           @update:value="(v: string) => { typeFilter = v || null; page = 1; load() }"
@@ -319,7 +318,6 @@ onMounted(async () => {
         :row-key="(r: Application) => r.id"
         :bordered="false"
         :single-line="false"
-        size="small"
         :pagination="{
           page,
           pageSize,
@@ -333,7 +331,7 @@ onMounted(async () => {
         <template #empty>
           <NEmpty description="还没有应用">
             <template #extra>
-              <NButton size="small" type="primary" @click="showCreate = true">创建第一个应用</NButton>
+              <NButton type="primary" @click="showCreate = true">创建第一个应用</NButton>
             </template>
           </NEmpty>
         </template>
@@ -341,13 +339,7 @@ onMounted(async () => {
     </div>
 
     <!-- 新建应用 -->
-    <NModal
-      v-model:show="showCreate"
-      preset="card"
-      title="新建应用"
-      class="!w-[560px]"
-      :bordered="false"
-    >
+    <VModal v-model:show="showCreate" title="新建应用" :width="560">
       <div class="space-y-3">
         <div>
           <div class="text-[12.5px] text-muted mb-1">应用名称</div>
@@ -387,10 +379,10 @@ onMounted(async () => {
       </div>
       <template #footer>
         <div class="flex justify-end gap-2">
-          <NButton size="small" @click="showCreate = false">取消</NButton>
-          <NButton size="small" type="primary" :loading="creating" @click="create">创建</NButton>
+          <NButton @click="showCreate = false">取消</NButton>
+          <NButton type="primary" :loading="creating" @click="create">创建</NButton>
         </div>
       </template>
-    </NModal>
+    </VModal>
   </div>
 </template>

@@ -8,7 +8,6 @@ import { MiniMap } from '@vue-flow/minimap'
 import {
   NButton,
   NInput,
-  NModal,
   NSpin,
   NTooltip,
   useMessage,
@@ -25,6 +24,7 @@ import '@vue-flow/core/dist/style.css'
 import '@vue-flow/core/dist/theme-default.css'
 import '@vue-flow/controls/dist/style.css'
 import '@vue-flow/minimap/dist/style.css'
+import VModal from '@/components/common/VModal/index.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -371,29 +371,29 @@ onMounted(load)
   <div class="h-[calc(100vh-52px)] flex flex-col bg-surface overflow-hidden">
     <!-- 工具栏 -->
     <div class="la-glass h-[52px] shrink-0 border-b px-3 flex items-center gap-2 z-10">
-      <NButton size="tiny" quaternary @click="router.push('/workflows')">
+      <NButton quaternary @click="router.push('/workflows')">
         <template #icon><LaIcon name="chevronLeft" :size="14" /></template>
         返回
       </NButton>
-      <NInput v-model:value="name" size="small" class="!w-[220px]" placeholder="工作流名称" />
+      <NInput v-model:value="name" class="!w-[220px]" placeholder="工作流名称" />
       <div class="flex-1"></div>
       <NTooltip><template #trigger>
-        <NButton size="tiny" quaternary :disabled="historyIndex <= 0" @click="undo">
+        <NButton quaternary :disabled="historyIndex <= 0" @click="undo">
           <template #icon><LaIcon name="chevronLeft" :size="13" /></template>
         </NButton>
       </template>撤销</NTooltip>
       <NTooltip><template #trigger>
-        <NButton size="tiny" quaternary :disabled="historyIndex >= history.length - 1" @click="redo">
+        <NButton quaternary :disabled="historyIndex >= history.length - 1" @click="redo">
           <template #icon><LaIcon name="chevronRight" :size="13" /></template>
         </NButton>
       </template>重做</NTooltip>
-      <NButton size="tiny" quaternary @click="autoLayout">
+      <NButton quaternary @click="autoLayout">
         <template #icon><LaIcon name="flow" :size="13" /></template>
         自动布局
       </NButton>
-      <NButton size="tiny" quaternary @click="validate">校验</NButton>
-      <NButton size="small" :loading="saving" @click="save()">保存</NButton>
-      <NButton size="small" type="primary" :loading="running" @click="openRun">
+      <NButton quaternary @click="validate">校验</NButton>
+      <NButton :loading="saving" @click="save()">保存</NButton>
+      <NButton type="primary" :loading="running" @click="openRun">
         <template #icon><LaIcon name="play" :size="13" /></template>
         运行
       </NButton>
@@ -409,12 +409,12 @@ onMounted(load)
           <button
             v-for="d in definitions"
             :key="d.type"
-            class="ios-press w-full flex items-center gap-2 px-2.5 py-2 rounded-[11px] text-left"
+            class="ios-press w-full flex items-center gap-2 px-2.5 py-2 rounded-[6px] text-left"
             style="background: #fff; border: 0.5px solid rgba(60, 60, 67, 0.13); box-shadow: 0 1px 1px rgba(0, 0, 0, 0.03)"
             @click="addNode(d)"
           >
             <span
-              class="w-[22px] h-[22px] rounded-[7px] flex items-center justify-center text-white shrink-0"
+              class="w-[22px] h-[22px] rounded-[6px] flex items-center justify-center text-white shrink-0"
               :style="{
                 background: d.color,
                 boxShadow: 'inset 0 0.5px 0 rgba(255,255,255,0.3), 0 1px 2px rgba(0,0,0,0.12)',
@@ -457,11 +457,11 @@ onMounted(load)
         <div
           v-if="showRunPanel"
           class="absolute bottom-3 left-3 right-3 bg-white overflow-hidden"
-          style="border-radius: 16px; border: 0.5px solid rgba(60, 60, 67, 0.13); box-shadow: 0 8px 32px -12px rgba(0, 0, 0, 0.22)"
+          style="border-radius: 8px; border: 0.5px solid rgba(60, 60, 67, 0.13); box-shadow: 0 8px 32px -12px rgba(0, 0, 0, 0.22)"
         >
           <div class="h-10 px-3.5 flex items-center gap-2 border-b border-line" style="background: rgba(255,255,255,0.9)">
             <span class="text-[12.5px] font-semibold text-ink tracking-tight">运行记录</span>
-            <span v-if="running" class="la-pill" style="background: rgba(0,122,255,0.12); color: #007aff">
+            <span v-if="running" class="la-pill" style="background: rgba(24,76,255,0.12); color: #184cff">
               <span class="w-[5px] h-[5px] rounded-full" style="background: currentColor; animation: la-pulse-dot 1.2s ease-in-out infinite"></span>
               执行中
             </span>
@@ -470,8 +470,8 @@ onMounted(load)
             </span>
             <span v-else-if="runError" class="la-pill" style="background: rgba(255,59,48,0.12); color: #d70015">失败</span>
             <div class="flex-1"></div>
-            <NButton v-if="running" size="tiny" @click="stopRun">中止</NButton>
-            <NButton size="tiny" quaternary @click="showRunPanel = false">
+            <NButton v-if="running" @click="stopRun">中止</NButton>
+            <NButton quaternary @click="showRunPanel = false">
               <template #icon><LaIcon name="close" :size="12" /></template>
             </NButton>
           </div>
@@ -516,7 +516,7 @@ onMounted(load)
           @update="updateNodeData"
         />
         <div v-else class="h-full flex flex-col items-center justify-center text-center px-6">
-          <div class="w-10 h-10 rounded-xl bg-[rgba(118,118,128,0.08)] text-[rgba(60,60,67,0.38)] flex items-center justify-center mb-2">
+          <div class="w-10 h-10 rounded-[6px] bg-[rgba(118,118,128,0.08)] text-[rgba(60,60,67,0.38)] flex items-center justify-center mb-2">
             <LaIcon name="sliders" :size="18" />
           </div>
           <div class="text-[12.5px] text-muted">选择画布上的节点<br />在这里配置参数</div>
@@ -525,7 +525,7 @@ onMounted(load)
     </div>
 
     <!-- 运行输入 -->
-    <NModal v-model:show="showInputs" preset="card" title="运行工作流" class="!w-[480px]" :bordered="false">
+    <VModal v-model:show="showInputs" title="运行工作流" :width="480">
       <div class="space-y-3">
         <div v-for="p in startParams" :key="p.name">
           <div class="text-[12.5px] text-muted mb-1">
@@ -541,10 +541,10 @@ onMounted(load)
       </div>
       <template #footer>
         <div class="flex justify-end gap-2">
-          <NButton size="small" @click="showInputs = false">取消</NButton>
-          <NButton size="small" type="primary" @click="startRun">开始运行</NButton>
+          <NButton @click="showInputs = false">取消</NButton>
+          <NButton type="primary" @click="startRun">开始运行</NButton>
         </div>
       </template>
-    </NModal>
+    </VModal>
   </div>
 </template>

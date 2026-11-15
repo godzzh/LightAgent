@@ -70,7 +70,7 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
     <div class="h-10 px-3 flex items-center justify-between border-b border-line shrink-0">
       <div class="flex items-center gap-1.5 min-w-0">
         <span class="text-[12.5px] font-medium text-ink truncate">{{ typeLabel[nodeType] || nodeType }}</span>
-        <NTag size="tiny" :bordered="false">{{ nodeId }}</NTag>
+        <NTag :bordered="false">{{ nodeId }}</NTag>
       </div>
     </div>
 
@@ -78,11 +78,10 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
       <!-- START -->
       <template v-if="nodeType === 'start'">
         <div class="text-[11.5px] text-muted">定义工作流输入参数，运行时逐项填值。</div>
-        <div v-for="(p, i) in data.params || []" :key="i" class="border border-line rounded-lg p-2 space-y-1.5">
+        <div v-for="(p, i) in data.params || []" :key="i" class="border border-line rounded-[8px] p-2 space-y-1.5">
           <div class="flex items-center gap-1.5">
             <NInput
               :value="p.name"
-              size="tiny"
               placeholder="参数名"
               @update:value="(v: string) => {
                 const list = [...(data.params || [])]
@@ -92,7 +91,6 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
             />
             <NSelect
               :value="p.type"
-              size="tiny"
               class="!w-[86px]"
               :options="['string', 'number', 'boolean'].map((t) => ({ label: t, value: t }))"
               @update:value="(v: string) => {
@@ -101,13 +99,12 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
                 patch({ params: list })
               }"
             />
-            <NButton size="tiny" quaternary @click="patch({ params: (data.params || []).filter((_: any, j: number) => j !== i) })">
+            <NButton quaternary @click="patch({ params: (data.params || []).filter((_: any, j: number) => j !== i) })">
               <template #icon><LaIcon name="close" :size="12" /></template>
             </NButton>
           </div>
           <NInput
             :value="String(p.default ?? '')"
-            size="tiny"
             placeholder="默认值"
             @update:value="(v: string) => {
               const list = [...(data.params || [])]
@@ -117,7 +114,6 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
           />
           <NInput
             :value="p.description || ''"
-            size="tiny"
             placeholder="参数说明"
             @update:value="(v: string) => {
               const list = [...(data.params || [])]
@@ -126,7 +122,7 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
             }"
           />
         </div>
-        <NButton size="tiny" dashed block @click="addParam">
+        <NButton dashed block @click="addParam">
           <template #icon><LaIcon name="plus" :size="12" /></template>
           添加输入参数
         </NButton>
@@ -141,7 +137,6 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
             :options="llmOptions"
             placeholder="选择模型（默认使用系统默认模型）"
             clearable
-            size="small"
             @update:value="(v: string) => patch({ model_config_id: v })"
           />
         </div>
@@ -149,7 +144,7 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
           <div class="flex items-center justify-between mb-1">
             <span class="text-muted">System Prompt</span>
             <NDropdown :options="varOptions" trigger="click" @select="(v: string) => appendVar('system_prompt', v)">
-              <NButton size="tiny" quaternary>
+              <NButton quaternary>
                 <template #icon><LaIcon name="variable" :size="12" /></template>
                 变量
               </NButton>
@@ -161,7 +156,7 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
           <div class="flex items-center justify-between mb-1">
             <span class="text-muted">User Prompt</span>
             <NDropdown :options="varOptions" trigger="click" @select="(v: string) => appendVar('user_prompt', v)">
-              <NButton size="tiny" quaternary>
+              <NButton quaternary>
                 <template #icon><LaIcon name="variable" :size="12" /></template>
                 变量
               </NButton>
@@ -176,7 +171,7 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
           </div>
           <div>
             <div class="text-muted mb-1">Max Tokens</div>
-            <NInputNumber :value="data.max_tokens ?? 2048" :min="1" :max="8192" size="tiny" class="!w-full" @update:value="(v: number | null) => patch({ max_tokens: v || 2048 })" />
+            <NInputNumber :value="data.max_tokens ?? 2048" :min="1" :max="8192" class="!w-full" @update:value="(v: number | null) => patch({ max_tokens: v || 2048 })" />
           </div>
         </div>
       </template>
@@ -190,7 +185,6 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
             multiple
             :options="datasetOptions"
             placeholder="选择知识库"
-            size="small"
             @update:value="(v: string[]) => patch({ dataset_ids: v })"
           />
         </div>
@@ -198,7 +192,7 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
           <div class="flex items-center justify-between mb-1">
             <span class="text-muted">检索问题</span>
             <NDropdown :options="varOptions" trigger="click" @select="(v: string) => appendVar('query', v)">
-              <NButton size="tiny" quaternary>
+              <NButton quaternary>
                 <template #icon><LaIcon name="variable" :size="12" /></template>
                 变量
               </NButton>
@@ -209,11 +203,11 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
         <div class="grid grid-cols-2 gap-2">
           <div>
             <div class="text-muted mb-1">Top K</div>
-            <NInputNumber :value="data.top_k ?? 4" :min="1" :max="20" size="tiny" class="!w-full" @update:value="(v: number | null) => patch({ top_k: v || 4 })" />
+            <NInputNumber :value="data.top_k ?? 4" :min="1" :max="20" class="!w-full" @update:value="(v: number | null) => patch({ top_k: v || 4 })" />
           </div>
           <div>
             <div class="text-muted mb-1">阈值</div>
-            <NInputNumber :value="data.threshold ?? 0.3" :min="0" :max="1" :step="0.05" size="tiny" class="!w-full" @update:value="(v: number | null) => patch({ threshold: v ?? 0.3 })" />
+            <NInputNumber :value="data.threshold ?? 0.3" :min="0" :max="1" :step="0.05" class="!w-full" @update:value="(v: number | null) => patch({ threshold: v ?? 0.3 })" />
           </div>
         </div>
       </template>
@@ -223,11 +217,11 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
         <div class="grid grid-cols-[1fr_92px] gap-2">
           <div>
             <div class="text-muted mb-1">URL</div>
-            <NInput :value="data.url" size="small" placeholder="https://api.example.com/x" @update:value="(v: string) => patch({ url: v })" />
+            <NInput :value="data.url" placeholder="https://api.example.com/x" @update:value="(v: string) => patch({ url: v })" />
           </div>
           <div>
             <div class="text-muted mb-1">Method</div>
-            <NSelect :value="data.method || 'GET'" size="small" :options="['GET', 'POST', 'PUT', 'DELETE'].map((m) => ({ label: m, value: m }))" @update:value="(v: string) => patch({ method: v })" />
+            <NSelect :value="data.method || 'GET'" :options="['GET', 'POST', 'PUT', 'DELETE'].map((m) => ({ label: m, value: m }))" @update:value="(v: string) => patch({ method: v })" />
           </div>
         </div>
         <div>
@@ -244,7 +238,7 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
         </div>
         <div>
           <div class="text-muted mb-1">超时（秒）</div>
-          <NInputNumber :value="data.timeout ?? 20" :min="1" :max="120" size="tiny" class="!w-full" @update:value="(v: number | null) => patch({ timeout: v || 20 })" />
+          <NInputNumber :value="data.timeout ?? 20" :min="1" :max="120" class="!w-full" @update:value="(v: number | null) => patch({ timeout: v || 20 })" />
         </div>
       </template>
 
@@ -258,7 +252,7 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
           <div class="flex items-center justify-between mb-1">
             <span class="text-muted">表达式</span>
             <NDropdown :options="varOptions" trigger="click" @select="(v: string) => appendVar('expression', v)">
-              <NButton size="tiny" quaternary>
+              <NButton quaternary>
                 <template #icon><LaIcon name="variable" :size="12" /></template>
                 变量
               </NButton>
@@ -268,7 +262,7 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
         </div>
         <div>
           <div class="text-muted mb-1">输出变量名</div>
-          <NInput :value="data.output_key || 'result'" size="small" @update:value="(v: string) => patch({ output_key: v })" />
+          <NInput :value="data.output_key || 'result'" @update:value="(v: string) => patch({ output_key: v })" />
         </div>
       </template>
 
@@ -276,10 +270,10 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
       <template v-if="nodeType === 'condition'">
         <div>
           <div class="text-muted mb-1">左值</div>
-          <NInput :value="data.left" size="small" placeholder="{{llm_1.text}}" @update:value="(v: string) => patch({ left: v })" />
+          <NInput :value="data.left" placeholder="{{llm_1.text}}" @update:value="(v: string) => patch({ left: v })" />
           <div class="mt-1">
             <NDropdown :options="varOptions" trigger="click" @select="(v: string) => patch({ left: `{{${v}}}` })">
-              <NButton size="tiny" quaternary>
+              <NButton quaternary>
                 <template #icon><LaIcon name="variable" :size="12" /></template>
                 选择变量
               </NButton>
@@ -290,7 +284,6 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
           <div class="text-muted mb-1">运算符</div>
           <NSelect
             :value="data.operator || 'eq'"
-            size="small"
             :options="[
               { label: '等于', value: 'eq' },
               { label: '不等于', value: 'ne' },
@@ -308,9 +301,9 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
         </div>
         <div>
           <div class="text-muted mb-1">右值</div>
-          <NInput :value="data.right" size="small" placeholder="比较值，可为变量" @update:value="(v: string) => patch({ right: v })" />
+          <NInput :value="data.right" placeholder="比较值，可为变量" @update:value="(v: string) => patch({ right: v })" />
         </div>
-        <div class="text-[11.5px] text-muted bg-[#F7F7F9] border border-line rounded-lg p-2">
+        <div class="text-[11.5px] text-muted bg-[#F7F7F9] border border-line rounded-[8px] p-2">
           条件为真走「是」分支，否则走「否」分支。分支连线请在画布上从对应出口拖出。
         </div>
       </template>
@@ -319,7 +312,7 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
       <template v-if="nodeType === 'variable'">
         <div>
           <div class="text-muted mb-1">变量名</div>
-          <NInput :value="data.name" size="small" @update:value="(v: string) => patch({ name: v })" />
+          <NInput :value="data.name" @update:value="(v: string) => patch({ name: v })" />
         </div>
         <div>
           <div class="text-muted mb-1">值（支持变量引用）</div>
@@ -333,7 +326,7 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
           <div class="flex items-center justify-between mb-1">
             <span class="text-muted">输出内容模板</span>
             <NDropdown :options="varOptions" trigger="click" @select="(v: string) => appendVar('answer', v)">
-              <NButton size="tiny" quaternary>
+              <NButton quaternary>
                 <template #icon><LaIcon name="variable" :size="12" /></template>
                 变量
               </NButton>
@@ -357,7 +350,7 @@ const paramsText = computed(() => JSON.stringify(props.data.params_obj || {}, nu
           <span
             v-for="v in upstreamVars"
             :key="v.value"
-            class="text-[10.5px] px-1.5 py-0.5 rounded bg-[rgba(0,122,255,0.09)] text-[#007AFF] font-mono cursor-pointer hover:bg-[rgba(0,122,255,0.12)]"
+            class="text-[10.5px] px-1.5 py-0.5 rounded bg-[rgba(24,76,255,0.09)] text-[#184CFF] font-mono cursor-pointer hover:bg-[rgba(24,76,255,0.12)]"
             :title="v.label"
             @click="appendVar(nodeType === 'llm' ? 'user_prompt' : nodeType === 'answer' ? 'answer' : 'query', v.value)"
           >

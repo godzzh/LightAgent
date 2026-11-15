@@ -4,7 +4,6 @@ import {
   NButton,
   NInput,
   NInputNumber,
-  NModal,
   NSelect,
   NSpin,
   NSwitch,
@@ -17,6 +16,7 @@ import EmptyState from '@/components/common/EmptyState.vue'
 import LaIcon from '@/components/common/LaIcon.vue'
 import { modelApi } from '@/api/knowledge'
 import type { ModelConfig, ModelProvider } from '@/types'
+import VModal from '@/components/common/VModal/index.vue'
 
 const message = useMessage()
 const dialog = useDialog()
@@ -172,14 +172,14 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="la-page max-w-[1400px]">
+  <div class="la-page">
     <PageHeader title="模型管理" subtitle="统一 Provider 架构，支持 DeepSeek / OpenAI 及兼容接口">
       <template #actions>
-        <NButton size="small" @click="showProvider = true">
+        <NButton @click="showProvider = true">
           <template #icon><LaIcon name="plus" :size="14" /></template>
           添加供应商
         </NButton>
-        <NButton size="small" type="primary" :disabled="!providers.length" @click="openModel()">
+        <NButton type="primary" :disabled="!providers.length" @click="openModel()">
           添加模型
         </NButton>
       </template>
@@ -194,21 +194,21 @@ onMounted(async () => {
         title="还没有配置模型供应商"
         description="添加 DeepSeek 供应商并填入 API Key，即可开始真实模型调用"
       >
-        <NButton type="primary" size="small" @click="showProvider = true">添加 DeepSeek</NButton>
+        <NButton type="primary" @click="showProvider = true">添加 DeepSeek</NButton>
       </EmptyState>
 
       <div v-else class="space-y-3">
         <div v-for="p in providers" :key="p.id" class="la-card overflow-hidden">
           <div class="flex flex-wrap items-center gap-3 px-4 h-14 border-b border-line">
-            <span class="w-8 h-8 rounded-lg bg-[rgba(0,122,255,0.09)] text-primary flex items-center justify-center">
+            <span class="w-8 h-8 rounded-[6px] bg-[rgba(24,76,255,0.09)] text-primary flex items-center justify-center">
               <LaIcon name="cpu" :size="15" />
             </span>
             <div class="min-w-0">
               <div class="flex items-center gap-2">
                 <span class="text-[13.5px] font-medium text-ink">{{ p.name }}</span>
-                <NTag size="tiny" :bordered="false">{{ p.provider_type }}</NTag>
-                <NTag v-if="p.is_default" size="tiny" :bordered="false" type="success">默认</NTag>
-                <NTag v-if="!p.enabled" size="tiny" :bordered="false" type="warning">已禁用</NTag>
+                <NTag :bordered="false">{{ p.provider_type }}</NTag>
+                <NTag v-if="p.is_default" :bordered="false" type="success">默认</NTag>
+                <NTag v-if="!p.enabled" :bordered="false" type="warning">已禁用</NTag>
               </div>
               <div class="text-[11.5px] text-muted mt-0.5">
                 {{ p.base_url || '默认地址' }} · Key {{ p.api_key_masked || '未配置' }}
@@ -216,9 +216,9 @@ onMounted(async () => {
             </div>
             <div class="flex-1"></div>
             <span v-if="testResult[p.id]" class="text-[11.5px]">{{ testResult[p.id] }}</span>
-            <NButton size="tiny" :loading="testing === p.id" @click="testProvider(p)">测试连接</NButton>
-            <NButton size="tiny" @click="openModel(p)">添加模型</NButton>
-            <NButton size="tiny" quaternary @click="confirmDeleteProvider(p)">
+            <NButton :loading="testing === p.id" @click="testProvider(p)">测试连接</NButton>
+            <NButton @click="openModel(p)">添加模型</NButton>
+            <NButton quaternary @click="confirmDeleteProvider(p)">
               <template #icon><LaIcon name="trash" :size="13" /></template>
             </NButton>
           </div>
@@ -236,7 +236,7 @@ onMounted(async () => {
                 <div class="text-[13px] text-ink truncate">{{ m.display_name }}</div>
                 <div class="text-[11px] text-muted font-mono truncate">{{ m.model_name }}</div>
               </div>
-              <NTag size="tiny" :bordered="false" :type="m.model_type === 'embedding' ? 'info' : 'default'">
+              <NTag :bordered="false" :type="m.model_type === 'embedding' ? 'info' : 'default'">
                 {{ m.model_type === 'embedding' ? 'Embedding' : 'LLM' }}
               </NTag>
               <span class="text-[11.5px] text-muted">
@@ -244,11 +244,10 @@ onMounted(async () => {
               </span>
               <span v-if="m.supports_tool_call" class="text-[11px] text-[#248A3D]">Tool Calling</span>
               <div class="flex-1"></div>
-              <NButton v-if="!m.is_default" size="tiny" quaternary @click="setDefault(m)">设为默认</NButton>
-              <NTag v-else size="tiny" :bordered="false" type="success">默认</NTag>
-              <NSwitch :value="m.enabled" size="small" @update:value="toggleModel(m)" />
+              <NButton v-if="!m.is_default" quaternary @click="setDefault(m)">设为默认</NButton>
+              <NTag v-else :bordered="false" type="success">默认</NTag>
+              <NSwitch :value="m.enabled" @update:value="toggleModel(m)" :round="false" />
               <NButton
-                size="tiny"
                 quaternary
                 @click="modelApi.deleteConfig(m.id).then(() => load())"
               >
@@ -260,7 +259,7 @@ onMounted(async () => {
       </div>
 
       <!-- 提示 -->
-      <div class="mt-3 text-[12px] text-muted bg-white border border-line rounded-xl p-3 leading-5">
+      <div class="mt-3 text-[12px] text-muted bg-white border border-line rounded-[8px] p-3 leading-5">
         API Key 使用 Fernet 对称加密存储，接口只返回脱敏字符串。业务代码通过统一
         <code class="bg-[rgba(118,118,128,0.08)] px-1 rounded">BaseLLMProvider</code>
         调用，不直接依赖任何厂商 SDK，后续新增厂商只需实现 Provider 并注册。
@@ -268,7 +267,7 @@ onMounted(async () => {
     </template>
 
     <!-- 添加供应商 -->
-    <NModal v-model:show="showProvider" preset="card" title="添加模型供应商" class="!w-[520px]" :bordered="false">
+    <VModal v-model:show="showProvider" title="添加模型供应商" :width="520">
       <div class="space-y-3">
         <div>
           <div class="text-[12.5px] text-muted mb-1">供应商类型</div>
@@ -293,19 +292,19 @@ onMounted(async () => {
         </div>
         <div class="flex items-center justify-between">
           <span class="text-[12.5px] text-ink">设为默认供应商</span>
-          <NSwitch v-model:value="providerForm.is_default" size="small" />
+          <NSwitch v-model:value="providerForm.is_default" :round="false" />
         </div>
       </div>
       <template #footer>
         <div class="flex justify-end gap-2">
-          <NButton size="small" @click="showProvider = false">取消</NButton>
-          <NButton size="small" type="primary" :loading="saving" @click="createProvider">保存</NButton>
+          <NButton @click="showProvider = false">取消</NButton>
+          <NButton type="primary" :loading="saving" @click="createProvider">保存</NButton>
         </div>
       </template>
-    </NModal>
+    </VModal>
 
     <!-- 添加模型 -->
-    <NModal v-model:show="showModel" preset="card" title="添加模型配置" class="!w-[560px]" :bordered="false">
+    <VModal v-model:show="showModel" title="添加模型配置" :width="560">
       <div class="space-y-3">
         <div>
           <div class="text-[12.5px] text-muted mb-1">所属供应商</div>
@@ -337,26 +336,26 @@ onMounted(async () => {
         <div class="grid grid-cols-3 gap-2">
           <div>
             <div class="text-[12.5px] text-muted mb-1">Temperature</div>
-            <NInputNumber v-model:value="modelForm.temperature" :min="0" :max="2" :step="0.1" size="small" class="!w-full" />
+            <NInputNumber v-model:value="modelForm.temperature" :min="0" :max="2" :step="0.1" class="!w-full" />
           </div>
           <div>
             <div class="text-[12.5px] text-muted mb-1">Top P</div>
-            <NInputNumber v-model:value="modelForm.top_p" :min="0" :max="1" :step="0.05" size="small" class="!w-full" />
+            <NInputNumber v-model:value="modelForm.top_p" :min="0" :max="1" :step="0.05" class="!w-full" />
           </div>
           <div>
             <div class="text-[12.5px] text-muted mb-1">Max Tokens</div>
-            <NInputNumber v-model:value="modelForm.max_tokens" :min="1" :max="32768" size="small" class="!w-full" />
+            <NInputNumber v-model:value="modelForm.max_tokens" :min="1" :max="32768" class="!w-full" />
           </div>
         </div>
         <div class="flex items-center gap-6">
           <label class="flex items-center gap-2 text-[12.5px] text-ink">
-            <NSwitch v-model:value="modelForm.supports_streaming" size="small" /> 支持流式
+            <NSwitch v-model:value="modelForm.supports_streaming" :round="false" /> 支持流式
           </label>
           <label class="flex items-center gap-2 text-[12.5px] text-ink">
-            <NSwitch v-model:value="modelForm.supports_tool_call" size="small" /> 支持 Tool Calling
+            <NSwitch v-model:value="modelForm.supports_tool_call" :round="false" /> 支持 Tool Calling
           </label>
           <label class="flex items-center gap-2 text-[12.5px] text-ink">
-            <NSwitch v-model:value="modelForm.is_default" size="small" /> 设为默认
+            <NSwitch v-model:value="modelForm.is_default" :round="false" /> 设为默认
           </label>
         </div>
         <div v-if="modelForm.model_type === 'embedding'" class="text-[11.5px] text-[#C86A00]">
@@ -366,10 +365,10 @@ onMounted(async () => {
       </div>
       <template #footer>
         <div class="flex justify-end gap-2">
-          <NButton size="small" @click="showModel = false">取消</NButton>
-          <NButton size="small" type="primary" :loading="saving" @click="createModel">保存</NButton>
+          <NButton @click="showModel = false">取消</NButton>
+          <NButton type="primary" :loading="saving" @click="createModel">保存</NButton>
         </div>
       </template>
-    </NModal>
+    </VModal>
   </div>
 </template>

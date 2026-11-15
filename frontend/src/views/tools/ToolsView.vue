@@ -5,7 +5,6 @@ import {
   NDrawer,
   NDrawerContent,
   NInput,
-  NModal,
   NSelect,
   NSpin,
   NSwitch,
@@ -20,6 +19,7 @@ import EmptyState from '@/components/common/EmptyState.vue'
 import LaIcon from '@/components/common/LaIcon.vue'
 import { toolApi } from '@/api/knowledge'
 import type { Tool, ToolParam } from '@/types'
+import VModal from '@/components/common/VModal/index.vue'
 
 const message = useMessage()
 const dialog = useDialog()
@@ -201,10 +201,10 @@ onMounted(load)
 </script>
 
 <template>
-  <div class="la-page max-w-[1200px]">
+  <div class="la-page">
     <PageHeader title="工具管理" subtitle="内置工具与自定义 HTTP API 工具，统一注册到 Tool Registry">
       <template #actions>
-        <NButton size="small" type="primary" @click="openCreate">
+        <NButton type="primary" @click="openCreate">
           <template #icon><LaIcon name="plus" :size="14" /></template>
           新建 HTTP 工具
         </NButton>
@@ -217,15 +217,15 @@ onMounted(load)
       <NTabs v-model:value="tab" type="line" class="px-4 pt-1">
         <NTabPane name="builtin" :tab="`内置工具 (${builtin.length})`">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pb-4">
-            <div v-for="t in builtin" :key="t.tool_key" class="border border-line rounded-lg p-3">
+            <div v-for="t in builtin" :key="t.tool_key" class="border border-line rounded-[8px] p-3">
               <div class="flex items-start gap-2.5">
-                <span class="w-8 h-8 rounded-lg bg-[rgba(0,122,255,0.09)] text-primary flex items-center justify-center shrink-0">
+                <span class="w-8 h-8 rounded-[6px] bg-[rgba(24,76,255,0.09)] text-primary flex items-center justify-center shrink-0">
                   <LaIcon name="tool" :size="15" />
                 </span>
                 <div class="min-w-0 flex-1">
                   <div class="flex items-center gap-2">
                     <span class="text-[13px] font-medium text-ink">{{ t.name }}</span>
-                    <NTag size="tiny" :bordered="false">{{ t.tool_key }}</NTag>
+                    <NTag :bordered="false">{{ t.tool_key }}</NTag>
                   </div>
                   <div class="text-[11.5px] text-muted mt-0.5">{{ t.description }}</div>
                   <div class="flex flex-wrap gap-1 mt-1.5">
@@ -238,7 +238,7 @@ onMounted(load)
                     </span>
                   </div>
                 </div>
-                <NButton size="tiny" quaternary @click="openTest(t.tool_key, t.parameters)">测试</NButton>
+                <NButton quaternary @click="openTest(t.tool_key, t.parameters)">测试</NButton>
               </div>
             </div>
           </div>
@@ -251,26 +251,26 @@ onMounted(load)
             title="还没有自定义 HTTP 工具"
             description="把任意公网 API 配置成工具，Agent 即可通过 Function Calling 调用（内置 SSRF 防护）"
           >
-            <NButton size="small" type="primary" @click="openCreate">新建工具</NButton>
+            <NButton type="primary" @click="openCreate">新建工具</NButton>
           </EmptyState>
           <div v-else class="divide-y divide-[rgba(118,118,128,0.08)] pb-4">
             <div v-for="t in custom" :key="t.id" class="flex flex-wrap items-center gap-3 py-2.5">
-              <span class="w-8 h-8 rounded-lg bg-[rgba(255,149,0,0.12)] text-[#C86A00] flex items-center justify-center">
+              <span class="w-8 h-8 rounded-[6px] bg-[rgba(255,149,0,0.12)] text-[#C86A00] flex items-center justify-center">
                 <LaIcon name="globe" :size="15" />
               </span>
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2">
                   <span class="text-[13px] text-ink">{{ t.name }}</span>
-                  <NTag size="tiny" :bordered="false">{{ t.tool_key }}</NTag>
-                  <NTag v-if="!t.enabled" size="tiny" :bordered="false" type="warning">已禁用</NTag>
+                  <NTag :bordered="false">{{ t.tool_key }}</NTag>
+                  <NTag v-if="!t.enabled" :bordered="false" type="warning">已禁用</NTag>
                 </div>
                 <div class="text-[11.5px] text-muted truncate max-w-lg">
                   {{ t.config?.method }} {{ t.config?.url }}
                 </div>
               </div>
-              <NButton size="tiny" quaternary @click="openTest(t.tool_key, t.parameters, t.id)">测试</NButton>
-              <NButton size="tiny" quaternary @click="openEdit(t)">编辑</NButton>
-              <NButton size="tiny" quaternary @click="removeTool(t)">
+              <NButton quaternary @click="openTest(t.tool_key, t.parameters, t.id)">测试</NButton>
+              <NButton quaternary @click="openEdit(t)">编辑</NButton>
+              <NButton quaternary @click="removeTool(t)">
                 <template #icon><LaIcon name="trash" :size="12" /></template>
               </NButton>
             </div>
@@ -326,23 +326,22 @@ onMounted(load)
           <div>
             <div class="flex items-center justify-between mb-1">
               <span class="text-[12.5px] text-muted">参数定义（自动转换为 Function Calling Schema）</span>
-              <NButton size="tiny" quaternary @click="addParam">
+              <NButton quaternary @click="addParam">
                 <template #icon><LaIcon name="plus" :size="12" /></template>
                 添加参数
               </NButton>
             </div>
             <div class="space-y-2">
               <div v-for="(p, i) in form.parameters" :key="i" class="flex items-center gap-1.5">
-                <NInput v-model:value="p.name" size="tiny" placeholder="参数名" class="!w-[110px]" />
+                <NInput v-model:value="p.name" placeholder="参数名" class="!w-[110px]" />
                 <NSelect
                   v-model:value="p.type"
-                  size="tiny"
                   class="!w-[92px]"
                   :options="['string', 'number', 'integer', 'boolean'].map((t) => ({ label: t, value: t }))"
                 />
-                <NInput v-model:value="p.description" size="tiny" placeholder="描述" />
-                <NSwitch v-model:value="p.required" size="small" />
-                <NButton size="tiny" quaternary @click="form.parameters.splice(i, 1)">
+                <NInput v-model:value="p.description" placeholder="描述" />
+                <NSwitch v-model:value="p.required" :round="false" />
+                <NButton quaternary @click="form.parameters.splice(i, 1)">
                   <template #icon><LaIcon name="close" :size="12" /></template>
                 </NButton>
               </div>
@@ -351,31 +350,31 @@ onMounted(load)
 
           <div class="flex items-center justify-between">
             <span class="text-[12.5px] text-ink">启用该工具</span>
-            <NSwitch v-model:value="form.enabled" size="small" />
+            <NSwitch v-model:value="form.enabled" :round="false" />
           </div>
         </div>
         <template #footer>
           <div class="flex justify-end gap-2">
-            <NButton size="small" @click="showForm = false">取消</NButton>
-            <NButton size="small" type="primary" :loading="saving" @click="save">保存</NButton>
+            <NButton @click="showForm = false">取消</NButton>
+            <NButton type="primary" :loading="saving" @click="save">保存</NButton>
           </div>
         </template>
       </NDrawerContent>
     </NDrawer>
 
     <!-- 测试 -->
-    <NModal v-model:show="showTest" preset="card" :title="`测试工具：${testTarget?.key || ''}`" class="!w-[560px]" :bordered="false">
+    <VModal v-model:show="showTest" :title="`测试工具：${testTarget?.key || ''}`" :width="560">
       <div class="space-y-2.5">
         <div v-for="p in testTarget?.params || []" :key="p.name">
           <div class="text-[12.5px] text-muted mb-1">{{ p.name }}（{{ p.type }}{{ p.required ? '，必填' : '' }}）</div>
           <NInput v-model:value="testArgs[p.name]" :placeholder="p.description" />
         </div>
         <div v-if="!(testTarget?.params || []).length" class="text-[12.5px] text-muted">该工具无需参数</div>
-        <NButton size="small" type="primary" :loading="testing" @click="runTest">执行测试</NButton>
-        <div v-if="testResult" class="bg-[#1C1C1E] text-[#E2E8F0] rounded-lg p-3 text-[11.5px] font-mono max-h-[260px] overflow-auto whitespace-pre-wrap">
+        <NButton type="primary" :loading="testing" @click="runTest">执行测试</NButton>
+        <div v-if="testResult" class="bg-[#1C1C1E] text-[#E2E8F0] rounded-[8px] p-3 text-[11.5px] font-mono max-h-[260px] overflow-auto whitespace-pre-wrap">
 {{ JSON.stringify(testResult, null, 2) }}
         </div>
       </div>
-    </NModal>
+    </VModal>
   </div>
 </template>

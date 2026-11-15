@@ -29,3 +29,6 @@ Thumbs.db
 
 # 运行时
 *.log
+
+# 本地开发辅助产物（无头浏览器验证截图、临时脚本）
+.workbuddy/screenshots/

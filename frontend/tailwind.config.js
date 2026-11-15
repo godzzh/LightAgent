@@ -4,9 +4,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        // iOS 系统色（Human Interface Guidelines 明色模式）
-        primary: '#007AFF',
-        'primary-press': '#0062CC',
+        // 品牌语义色（主色 #184cff）
+        primary: '#184CFF',
+        'primary-press': '#133DD1',
         surface: '#F2F2F7', // systemGroupedBackground
         elevated: '#FFFFFF', // secondarySystemGroupedBackground
         ink: '#1C1C1E', // label
@@ -34,10 +34,10 @@ export default {
         mono: ['SF Mono', 'JetBrains Mono', 'Menlo', 'Consolas', 'monospace'],
       },
       borderRadius: {
-        // iOS 连续圆角近似值
-        card: '18px',
-        group: '12px',
-        control: '10px',
+        // 统一组件圆角：4px
+        card: '4px',
+        group: '4px',
+        control: '4px',
       },
       boxShadow: {
         // 极轻阴影：iOS 靠层次与留白，而非重投影

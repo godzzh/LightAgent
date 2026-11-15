@@ -284,22 +284,22 @@ onMounted(load)
           <div class="flex-1"></div>
           <NTooltip>
             <template #trigger>
-              <NButton size="tiny" quaternary @click="showRunPanel = !showRunPanel">
+              <NButton quaternary @click="showRunPanel = !showRunPanel">
                 <template #icon><LaIcon name="sliders" :size="14" /></template>
               </NButton>
             </template>
             {{ showRunPanel ? '隐藏运行详情' : '显示运行详情' }}
           </NTooltip>
-          <NButton size="tiny" quaternary @click="clearChat">
+          <NButton quaternary @click="clearChat">
             <template #icon><LaIcon name="trash" :size="14" /></template>
             清空
           </NButton>
           <NDropdown :options="moreOptions" @select="onMore">
-            <NButton size="tiny" quaternary>
+            <NButton quaternary>
               <template #icon><LaIcon name="more" :size="14" /></template>
             </NButton>
           </NDropdown>
-          <NButton size="tiny" @click="router.push(`/applications/${app.id}/publish`)">
+          <NButton @click="router.push(`/applications/${app.id}/publish`)">
             <template #icon><LaIcon name="globe" :size="14" /></template>
             发布
           </NButton>
@@ -309,8 +309,8 @@ onMounted(load)
         <div ref="scrollEl" class="flex-1 overflow-y-auto px-5 py-5 space-y-4">
           <div v-if="!messages.length" class="h-full flex flex-col items-center justify-center text-center">
             <div
-              class="w-[56px] h-[56px] rounded-[16px] text-white flex items-center justify-center mb-4"
-              style="background: linear-gradient(160deg, #4ba3ff 0%, #007aff 100%); box-shadow: 0 6px 20px -8px rgba(0, 122, 255, 0.6)"
+              class="w-[56px] h-[56px] rounded-[6px] text-white flex items-center justify-center mb-4"
+              style="background: linear-gradient(160deg, #6b8cff 0%, #184cff 100%); box-shadow: 0 6px 20px -8px rgba(24,76,255,0.6)"
             >
               <LaIcon name="sparkles" :size="26" :stroke-width="2" />
             </div>
@@ -322,7 +322,7 @@ onMounted(load)
               <button
                 v-for="q in config.opening_questions"
                 :key="q"
-                class="ios-press text-[12.5px] px-3.5 py-2 rounded-full bg-white border border-line text-[rgba(60,60,67,0.8)] hover:text-primary hover:border-[rgba(0,122,255,0.4)]"
+                class="ios-press text-[12.5px] px-3.5 py-2 rounded-full bg-white border border-line text-[rgba(60,60,67,0.8)] hover:text-primary hover:border-[rgba(24,76,255,0.4)]"
                 @click="((input = q), send())"
               >
                 {{ q }}
@@ -336,7 +336,7 @@ onMounted(load)
         <!-- 输入区：iOS 消息输入条 -->
         <div class="shrink-0 px-4 py-3 border-t border-line" style="background: rgba(255, 255, 255, 0.8)">
           <div
-            class="rounded-[20px] bg-white transition-all"
+            class="rounded-[8px] bg-white transition-all"
             style="border: 1px solid rgba(60, 60, 67, 0.13); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03)"
           >
             <NInput
@@ -359,13 +359,12 @@ onMounted(load)
                 </span>
               </div>
               <div class="flex items-center gap-2">
-                <NButton v-if="sending" size="tiny" @click="stop">
+                <NButton v-if="sending" @click="stop">
                   <template #icon><LaIcon name="stop" :size="13" /></template>
                   停止
                 </NButton>
                 <NButton
                   v-else
-                  size="small"
                   type="primary"
                   circle
                   :disabled="!input.trim()"

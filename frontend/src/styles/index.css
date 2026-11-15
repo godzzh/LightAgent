@@ -2,16 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "SarasaMonoSC";
+  src: url("/static/fonts/SarasaMonoSC-Regular.woff2") format("woff2");
+  font-display: swap;
+}
+
 /* ============================================================
-   LightAgent · iOS 设计系统
-   参考 Apple Human Interface Guidelines + Liquid Glass 材质
-   原则：分组留白 > 边框投影；系统字体；弹簧动效；克制的色彩
+   LightAgent · 设计系统（对齐统一网络治理平台 Admin 后台风格）
+   主色 #184cff，组件统一 4px 圆角；浅蓝侧栏 + 网格底内容区 + 白卡片
+   原则：清晰层级 > 投影；系统字体；200ms 过渡；克制的色彩
    ============================================================ */
 
 :root {
   /* --- 语义色（明色） --- */
-  --la-blue: #007aff;
-  --la-blue-press: #0062cc;
+  --la-blue: #184cff;
+  --la-blue-press: #133dd1;
   --la-green: #34c759;
   --la-orange: #ff9500;
   --la-red: #ff3b30;
@@ -19,34 +25,64 @@
   --la-teal: #30b0c7;
   --la-indigo: #5856d6;
 
-  /* --- 背景层次 --- */
-  --la-bg: #f2f2f7; /* systemGroupedBackground */
+  /* --- 背景层次（对齐 admin 后台 token） --- */
+  --la-bg: #f5f7fa;
   --la-bg-elevated: #ffffff; /* 卡片 / 分组 */
+  --la-bg-subtle: #f8faff; /* 次级表面 */
   --la-bg-inset: rgba(118, 118, 128, 0.08); /* 输入框、分段控件底 */
-  --la-bg-hover: rgba(120, 120, 128, 0.08);
-  --la-bg-press: rgba(120, 120, 128, 0.14);
+  --la-bg-hover: rgba(24, 76, 255, 0.06);
+  --la-bg-press: rgba(24, 76, 255, 0.12);
 
-  /* --- 文字 --- */
-  --la-text: #1c1c1e;
-  --la-text-2: rgba(60, 60, 67, 0.6); /* secondaryLabel */
-  --la-text-3: rgba(60, 60, 67, 0.38); /* tertiaryLabel */
-  --la-separator: rgba(60, 60, 67, 0.13);
+  /* --- 文字（对齐 admin 后台；白底对比度 ≥4.5:1） --- */
+  --la-text: #1f2329;
+  --la-text-2: #4e5969;
+  --la-text-3: #86909c;
+  --la-separator: #e5eaf3;
+  --la-border-light: #eef1f6;
 
-  /* --- 圆角 --- */
-  --la-r-card: 18px;
-  --la-r-group: 12px;
-  --la-r-control: 10px;
+  /* --- admin 布局变量（参考项目 themes/admin.ts） --- */
+  --la-primary-rgb: 24, 76, 255;
+  --la-primary-hover: #4770ff;
+  --la-primary-pressed: #1038d6;
+  --la-nav-bg: #f8f9ff;
+  --la-nav-bg-deep: #eef2ff;
+  --la-nav-border: rgba(24, 76, 255, 0.13);
+  --la-nav-text: #27355f;
+  --la-nav-text-muted: #7884a8;
+  --la-nav-glow: #6f8dff;
+  --la-nav-hover-bg: rgba(24, 76, 255, 0.06);
+  --la-nav-active-bg: rgba(24, 76, 255, 0.10);
+  --la-panel-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
 
-  /* --- 阴影（极轻） --- */
-  --la-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px -12px rgba(0, 0, 0, 0.1);
+  /* --- 圆角分层 ---
+     naive-ui 组件统一 4px；自定义卡片/面板 8px；小图标块 6px；全圆角元素单独处理 */
+  --la-r-panel: 8px;   /* 大卡片 / 面板 / 弹窗 / 代码块 / 分组容器 */
+  --la-r-block: 6px;   /* 小图标块 / 标签 / 列表项 / 菜单项 */
+  --la-r-card: 8px;    /* 兼容旧引用，指向面板级 */
+  --la-r-group: 8px;
+  --la-r-control: 4px; /* naive-ui 组件专用，保持 4px */
 
-  /* --- 动效 --- */
+  /* --- 阴影：admin 面板柔和投影 --- */
+  --la-shadow-card: 0 4px 20px rgba(15, 23, 42, 0.06);
+
+  /* --- 动效 token（统一时长/缓动，避免各页各写一套） --- */
   --la-spring: cubic-bezier(0.32, 0.72, 0, 1);
   --la-ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --la-dur-fast: 140ms;
+  --la-dur-base: 200ms;
+  --la-dur-slow: 260ms;
+
+  /* --- 交互状态（专业 UI 基线） --- */
+  --la-focus-ring: 0 0 0 3px rgba(24, 76, 255, 0.28);
+  --la-bg-disabled: rgba(118, 118, 128, 0.06);
 
   /* --- 毛玻璃 --- */
-  --la-glass-bg: rgba(255, 255, 255, 0.72);
+  --la-glass-bg: rgba(255, 255, 255, 0.92);
   --la-glass-border: rgba(255, 255, 255, 0.6);
+}
+
+*:not(i) {
+  font-family: "v-sans", 'SarasaMonoSC' !important;
 }
 
 html,
@@ -73,10 +109,64 @@ body {
   box-sizing: border-box;
 }
 
-/* 键盘可达性：仅键盘导航时显示聚焦环 */
+/* ---------- 交互状态基线（ui-ux-pro-max: hover / focus / disabled / reduced-motion） ---------- */
+
+/* 键盘可达性：仅键盘导航时显示清晰聚焦环 */
 :focus-visible {
-  outline: 2px solid rgba(0, 122, 255, 0.55);
+  outline: 2px solid var(--la-blue);
   outline-offset: 2px;
+  border-radius: 2px;
+}
+/* 点击类元素统一指针反馈（skill: cursor-pointer on all clickable elements） */
+button,
+[role='button'],
+a,
+summary,
+label[for],
+.n-button,
+.n-data-table .n-data-table-tr,
+.la-tile,
+.ios-press {
+  cursor: pointer;
+}
+button:disabled,
+[aria-disabled='true'],
+.n-button--disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  box-shadow: none;
+}
+/* 禁用态不改变布局盒尺寸、不响应按压 */
+button:disabled:active,
+.n-button--disabled:active {
+  transform: none;
+}
+/* 全局过渡使用统一时长 token：hover 200ms、按压 140ms。
+   注意：.ios-press / .la-tile 在下方自带 transition（含 transform），
+   故此处只覆盖未自定义过渡的普通交互元素，避免相互覆盖导致动画丢失。 */
+a:not(.ios-press):not(.la-tile),
+button:not(.ios-press):not(.n-button),
+.la-row:not(.ios-press) {
+  transition: background-color var(--la-dur-base) var(--la-ease),
+    color var(--la-dur-base) var(--la-ease),
+    border-color var(--la-dur-base) var(--la-ease),
+    box-shadow var(--la-dur-base) var(--la-ease),
+    opacity var(--la-dur-base) var(--la-ease);
+}
+/* 卡片 hover 采用极轻阴影过渡，而非位移（避免布局抖动） */
+.la-card,
+.la-card-flat {
+  transition: box-shadow var(--la-dur-slow) var(--la-ease),
+    border-color var(--la-dur-base) var(--la-ease);
+}
+.la-card:hover {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 10px 28px -14px rgba(0, 0, 0, 0.18);
+}
+/* 统一错误提示语义色（≥4.5:1） */
+:root {
+  --la-error-text: #b3261e;
+  --la-error-bg: rgba(255, 59, 48, 0.08);
+  --la-error-border: rgba(255, 59, 48, 0.24);
 }
 
 /* ---------- 滚动条：iOS 细圆条 ---------- */
@@ -88,7 +178,7 @@ body {
   background: rgba(60, 60, 67, 0.22);
   border: 3px solid transparent;
   background-clip: content-box;
-  border-radius: 10px;
+  border-radius: var(--la-r-block);
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(60, 60, 67, 0.34);
@@ -102,9 +192,11 @@ body {
    布局与排版
    ============================================================ */
 
+/* 页面容器：铺满 .la-admin-main（不设最大宽度）；
+   水平间距由 .la-admin-main 的 24px padding 统一提供，底部留白保证内容可完整滚出。 */
 .la-page {
-  @apply px-6 py-6 mx-auto w-full;
-  max-width: 1360px;
+  @apply w-full;
+  padding-bottom: 8px;
 }
 
 /* iOS 大标题（Large Title） */
@@ -114,7 +206,8 @@ body {
 }
 
 .la-subtitle {
-  @apply text-[13px] text-muted;
+  @apply text-[13px];
+  color: var(--la-text-2);
   letter-spacing: -0.004em;
 }
 
@@ -125,20 +218,32 @@ body {
   padding-left: 4px;
 }
 
-/* 卡片：iOS 分组卡片 */
+/* 卡片：admin 白面板 + 顶部 2px 主色渐变条 */
 .la-card {
+  position: relative;
   @apply bg-white;
-  border-radius: var(--la-r-card);
-  box-shadow: var(--la-shadow-card);
-  border: 0.5px solid rgba(0, 0, 0, 0.03);
+  border-radius: var(--la-r-panel);
+  box-shadow: var(--la-panel-shadow);
+  border: 1px solid var(--la-separator);
   overflow: hidden;
+}
+.la-card::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  width: 108px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--la-blue), var(--la-primary-hover), transparent);
+  content: '';
+  pointer-events: none;
 }
 
 /* 更轻的平面卡片（无阴影） */
 .la-card-flat {
   @apply bg-white;
-  border-radius: var(--la-r-card);
-  border: 0.5px solid var(--la-separator);
+  border-radius: var(--la-r-panel);
+  border: 1px solid var(--la-separator);
 }
 
 /* 毛玻璃材质（Liquid Glass 轻量版）：仅用于导航、浮层 */
@@ -168,8 +273,11 @@ body {
 
 /* 可点击元素统一按压反馈（不改变布局盒尺寸，避免抖动） */
 .ios-press {
-  transition: transform 180ms var(--la-spring), background-color 140ms var(--la-ease),
-    opacity 140ms var(--la-ease);
+  transition: transform var(--la-dur-slow) var(--la-spring),
+    background-color var(--la-dur-fast) var(--la-ease),
+    color var(--la-dur-fast) var(--la-ease),
+    border-color var(--la-dur-base) var(--la-ease),
+    opacity var(--la-dur-fast) var(--la-ease);
 }
 .ios-press:active {
   transform: scale(0.975);
@@ -178,10 +286,13 @@ body {
 /* 悬浮卡片（快速入口） */
 .la-tile {
   @apply bg-white text-left;
-  border-radius: var(--la-r-card);
+  border-radius: var(--la-r-panel);
   border: 0.5px solid rgba(0, 0, 0, 0.03);
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.03);
-  transition: transform 260ms var(--la-spring), box-shadow 260ms var(--la-ease);
+  transition: transform var(--la-dur-slow) var(--la-spring),
+    box-shadow var(--la-dur-slow) var(--la-ease),
+    background-color var(--la-dur-base) var(--la-ease),
+    border-color var(--la-dur-base) var(--la-ease);
 }
 .la-tile:hover {
   transform: translateY(-2px);
@@ -194,8 +305,32 @@ body {
 /* 图标容器（iOS App Icon 观感：连续圆角 + 渐变） */
 .la-icon-tile {
   @apply flex items-center justify-center text-white;
-  border-radius: 10px;
+  border-radius: var(--la-r-block);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+/* 侧栏激活项：除颜色外再加 3px 左侧指示条，避免仅靠颜色表达状态 */
+.la-nav-item[aria-current='page'] {
+  box-shadow: inset 3px 0 0 var(--la-blue);
+}
+
+/* 危险图标按钮：默认可见（键盘/触屏可达），hover 才变红 */
+.la-icon-btn-danger {
+  @apply inline-flex items-center justify-center shrink-0;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--la-r-block);
+  color: var(--la-text-3);
+  transition: color var(--la-dur-base) var(--la-ease),
+    background-color var(--la-dur-base) var(--la-ease);
+}
+.la-icon-btn-danger:hover {
+  color: var(--la-error-text);
+  background: var(--la-error-bg);
+}
+.la-icon-btn-danger:focus-visible {
+  outline: 2px solid var(--la-blue);
+  outline-offset: 1px;
 }
 
 /* 状态胶囊 */
@@ -205,24 +340,27 @@ body {
 }
 
 /* ============================================================
-   Naive UI 覆盖：统一为 iOS 观感
+   Naive UI 覆盖：统一为品牌观感（#184cff / 4px 圆角）
    ============================================================ */
 
 /* --- 按钮 --- */
 .n-button {
   border-radius: var(--la-r-control) !important;
   font-weight: 500;
-  transition: transform 180ms var(--la-spring), background-color 140ms var(--la-ease),
-    opacity 140ms var(--la-ease), box-shadow 140ms var(--la-ease) !important;
+  transition: transform var(--la-dur-slow) var(--la-spring),
+    background-color var(--la-dur-fast) var(--la-ease),
+    color var(--la-dur-fast) var(--la-ease),
+    opacity var(--la-dur-fast) var(--la-ease),
+    box-shadow var(--la-dur-fast) var(--la-ease) !important;
 }
 .n-button:active {
   transform: scale(0.97);
 }
 .n-button--primary-type:not(.n-button--disabled) {
-  box-shadow: 0 1px 2px rgba(0, 122, 255, 0.24);
+  box-shadow: 0 1px 2px rgba(24,76,255,0.24);
 }
 .n-button--primary-type:hover {
-  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.28);
+  box-shadow: 0 2px 8px rgba(24,76,255,0.28);
 }
 .n-button--text-type:active,
 .n-button--default-type:active {
@@ -234,9 +372,9 @@ body {
 .n-base-selection {
   border-radius: var(--la-r-control) !important;
   --n-border: 1px solid var(--la-separator) !important;
-  --n-border-hover: 1px solid rgba(0, 122, 255, 0.5) !important;
+  --n-border-hover: 1px solid rgba(24,76,255,0.5) !important;
   --n-border-focus: 1px solid var(--la-blue) !important;
-  --n-box-shadow-focus: 0 0 0 3px rgba(0, 122, 255, 0.16) !important;
+  --n-box-shadow-focus: 0 0 0 3px rgba(24,76,255,0.16) !important;
 }
 .n-input .n-input__border,
 .n-input .n-input__state-border {
@@ -250,7 +388,7 @@ body {
 /* 搜索框：灰底无边框（iOS 搜索栏） */
 .la-search .n-input {
   background: var(--la-bg-inset) !important;
-  border-radius: 10px !important;
+  border-radius: var(--la-r-control) !important;
 }
 .la-search .n-input .n-input__border,
 .la-search .n-input .n-input__state-border {
@@ -266,27 +404,46 @@ body {
 
 /* --- 表格：无竖线、行分隔细线、表头小字 --- */
 .n-data-table .n-data-table-th {
-  background: transparent !important;
+  background: #f7f9fc !important;
   font-size: 12px !important;
   font-weight: 500 !important;
-  color: var(--la-text-2) !important;
+  color: #64748b !important;
   letter-spacing: 0.01em;
-  border-bottom: 0.5px solid var(--la-separator) !important;
+  border-bottom: 1px solid var(--la-separator) !important;
 }
 .n-data-table .n-data-table-td {
-  border-bottom: 0.5px solid var(--la-separator) !important;
+  border-bottom: 1px solid var(--la-separator) !important;
   font-size: 13.5px;
 }
 .n-data-table .n-data-table-tr:hover .n-data-table-td {
-  background: var(--la-bg-hover) !important;
+  background: #f8faff !important;
 }
 .n-data-table .n-data-table-base-table-body {
-  border-radius: 0 0 var(--la-r-card) var(--la-r-card);
+  border-radius: 0 0 var(--la-r-control) var(--la-r-control);
+}
+/* 数据密集型表格在小视口可横向滚动，不撑破布局 */
+.n-data-table {
+  max-width: 100%;
+  overflow-x: auto;
+}
+/* 表格作为卡片直接子级时，左右与底部留出呼吸空间，避免表头/单元格贴着容器边 */
+.la-card > .n-data-table {
+  padding: 0 12px 12px;
+  box-sizing: border-box;
+}
+/* 分页栏随表格一起内缩，保持视觉对齐 */
+.la-card > .n-data-table .n-data-table__pagination {
+  padding-left: 0;
+  padding-right: 0;
+}
+/* 行 hover 反馈更明确 */
+.n-data-table .n-data-table-tr {
+  transition: background-color var(--la-dur-fast) var(--la-ease);
 }
 
 /* --- 弹层 / 对话框：更圆、更轻、毛玻璃遮罩 --- */
 .n-modal {
-  border-radius: 20px !important;
+  border-radius: var(--la-r-control) !important;
   box-shadow: var(--la-shadow-card), 0 32px 80px -24px rgba(0, 0, 0, 0.3) !important;
 }
 .n-drawer {
@@ -300,15 +457,15 @@ body {
 }
 .n-popover,
 .n-dropdown-menu {
-  border-radius: 14px !important;
+  border-radius: var(--la-r-control) !important;
   box-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.18), 0 2px 6px rgba(0, 0, 0, 0.06) !important;
 }
 .n-dropdown-option-body {
   font-size: 13.5px;
-  border-radius: 8px;
+  border-radius: var(--la-r-control);
 }
 .n-dropdown-option-body::before {
-  border-radius: 8px !important;
+  border-radius: var(--la-r-control) !important;
 }
 
 /* --- Tabs：iOS 分段控件观感 --- */
@@ -323,12 +480,18 @@ body {
 
 /* --- 分页 --- */
 .n-pagination .n-pagination-item {
-  border-radius: 8px !important;
+  border-radius: var(--la-r-control) !important;
 }
 
-/* --- 开关 --- */
+/* --- 开关：配合 :round="false" 使用方形轨道（naive-ui 组件统一 4px 圆角） --- */
 .n-switch {
-  border-radius: 999px !important;
+  border-radius: var(--la-r-control) !important;
+}
+.n-switch .n-switch__rail {
+  border-radius: var(--la-r-control) !important;
+}
+.n-switch .n-switch__button {
+  border-radius: var(--la-r-control) !important;
 }
 
 /* --- 骨架 / 加载 --- */
@@ -383,7 +546,7 @@ body {
 .la-markdown pre {
   @apply p-3.5 overflow-x-auto my-3;
   background: #1c1c1e;
-  border-radius: var(--la-r-group);
+  border-radius: var(--la-r-panel);
 }
 .la-markdown pre code {
   @apply bg-transparent text-inherit p-0;
@@ -398,7 +561,7 @@ body {
   border-collapse: separate;
   border-spacing: 0;
   border: 0.5px solid var(--la-separator);
-  border-radius: var(--la-r-group);
+  border-radius: var(--la-r-panel);
   overflow: hidden;
 }
 .la-markdown th {
@@ -444,11 +607,11 @@ body {
   stroke: var(--la-blue);
 }
 .vue-flow__minimap {
-  border-radius: var(--la-r-group);
+  border-radius: var(--la-r-panel);
   overflow: hidden;
 }
 .vue-flow__controls {
-  border-radius: var(--la-r-group);
+  border-radius: var(--la-r-panel);
   overflow: hidden;
   box-shadow: var(--la-shadow-card);
 }
@@ -530,6 +693,10 @@ body {
   .n-button:active {
     transform: none !important;
   }
+  .la-card:hover,
+  .la-tile:hover {
+    box-shadow: var(--la-shadow-card) !important;
+  }
 }
 
 /* 尊重「减弱透明度」：毛玻璃退化为不透明底 */
@@ -540,3 +707,350 @@ body {
     backdrop-filter: none;
   }
 }
+
+
+/* ============================================================
+   Admin 后台布局（对齐参考项目 Layout.vue / Layout.less）
+   ============================================================ */
+.la-admin-layout {
+  height: 100vh;
+  min-height: 0;
+  padding-left: 240px;
+  overflow: hidden;
+  color: var(--la-text);
+  background:
+    linear-gradient(rgba(var(--la-primary-rgb), 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--la-primary-rgb), 0.025) 1px, transparent 1px),
+    radial-gradient(circle at 86% 8%, rgba(var(--la-primary-rgb), 0.09), transparent 29rem),
+    var(--la-bg);
+  background-size: 32px 32px, 32px 32px, auto, auto;
+  transition: padding-left 200ms ease;
+}
+.la-admin-layout--collapsed { padding-left: 64px; }
+
+/* --- 侧栏 --- */
+.la-admin-sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 50;
+  display: flex;
+  width: 240px;
+  overflow: hidden;
+  flex-direction: column;
+  color: var(--la-nav-text);
+  background:
+    radial-gradient(circle at 18% 0, rgba(var(--la-primary-rgb), 0.13), transparent 260px),
+    linear-gradient(180deg, var(--la-nav-bg), var(--la-nav-bg-deep));
+  border-right: 1px solid var(--la-nav-border);
+  box-shadow: 12px 0 32px rgba(var(--la-primary-rgb), 0.07);
+  transition: width 200ms ease, transform 200ms ease;
+}
+.la-admin-sidebar::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.7), transparent 34%);
+  content: '';
+}
+.la-admin-brand {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 68px;
+  padding: 0 18px;
+  align-items: center;
+  gap: 12px;
+  color: var(--la-nav-text);
+  font: inherit;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.46);
+  border: 0;
+  border-bottom: 1px solid var(--la-nav-border);
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+.la-admin-brand:hover { background: rgba(255, 255, 255, 0.78); }
+.la-admin-brand:focus-visible { outline: 2px solid var(--la-nav-glow); outline-offset: -3px; }
+.la-admin-brand-mark {
+  position: relative;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: none;
+  color: #fff;
+  background: linear-gradient(145deg, var(--la-primary-hover), var(--la-blue));
+  border: 1px solid rgba(255, 255, 255, 0.86);
+  border-radius: var(--la-r-block);
+  box-shadow: 0 8px 18px rgba(var(--la-primary-rgb), 0.2), 0 0 0 3px rgba(var(--la-primary-rgb), 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  place-items: center;
+}
+.la-admin-brand-copy { width: 156px; min-width: 0; overflow: hidden; white-space: nowrap; transition: width 200ms ease, opacity 150ms ease; }
+.la-admin-brand-copy strong, .la-admin-brand-copy small { display: block; overflow: hidden; text-overflow: ellipsis; }
+.la-admin-brand-copy strong { color: var(--la-nav-text); font-size: 14px; font-weight: 700; letter-spacing: 0.02em; line-height: 1.25; }
+.la-admin-brand-copy small { margin-top: 5px; color: var(--la-nav-text-muted); font-size: 11px; letter-spacing: 0.14em; line-height: 1; }
+
+.la-admin-nav { position: relative; flex: 1; padding: 20px 0 12px; overflow-y: auto; scrollbar-width: none; }
+.la-admin-nav::-webkit-scrollbar { display: none; }
+.la-admin-nav-group { margin-bottom: 4px; }
+.la-admin-group-label { padding: 6px 26px 8px; color: var(--la-nav-text-muted); font-size: 11px; font-weight: 600; letter-spacing: 0.12em; }
+.la-admin-menu-item {
+  position: relative;
+  display: grid;
+  width: calc(100% - 24px);
+  height: 44px;
+  margin: 0 12px 6px;
+  padding: 0 14px;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: center;
+  column-gap: 12px;
+  color: var(--la-nav-text);
+  font: inherit;
+  font-size: 13.5px;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--la-r-block);
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+.la-admin-menu-item:hover { color: var(--la-blue); border-color: rgba(var(--la-primary-rgb), 0.12); background: var(--la-nav-hover-bg); }
+.la-admin-menu-item:focus-visible { outline: 2px solid rgba(var(--la-primary-rgb), 0.38); outline-offset: -2px; }
+.la-admin-menu-item--active { color: var(--la-blue); border-color: rgba(var(--la-primary-rgb), 0.18); background: var(--la-nav-active-bg); box-shadow: 0 7px 18px rgba(var(--la-primary-rgb), 0.1); }
+.la-admin-menu-item--active::before { position: absolute; top: 10px; bottom: 10px; left: -13px; width: 3px; border-radius: 0 3px 3px 0; background: var(--la-blue); content: ''; }
+.la-admin-menu-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-weight: 500; white-space: nowrap; }
+.la-admin-menu-icon { display: grid; width: 22px; height: 22px; color: var(--la-nav-text-muted); place-items: center; transition: color 160ms ease, transform 180ms ease; }
+.la-admin-menu-item:hover .la-admin-menu-icon, .la-admin-menu-item--active .la-admin-menu-icon { color: var(--la-blue); }
+.la-admin-menu-item:hover .la-admin-menu-icon { transform: translateY(-1px); }
+
+.la-admin-sidebar-footer { position: relative; display: flex; padding: 8px 11px 12px; justify-content: center; border-top: 1px solid var(--la-nav-border); background: rgba(255, 255, 255, 0.42); }
+.la-admin-collapse { display: grid; width: 100%; height: 44px; padding: 0; color: var(--la-nav-text-muted); font: inherit; background: transparent; border: 0; border-radius: var(--la-r-block); cursor: pointer; place-items: center; transition: background-color 160ms ease, color 160ms ease; }
+.la-admin-collapse:hover { color: var(--la-blue); background: var(--la-nav-hover-bg); }
+.la-admin-collapse:focus-visible { outline: 1px solid var(--la-nav-glow); outline-offset: -2px; }
+.la-admin-collapse svg { width: 20px; height: 20px; transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1); }
+.la-admin-layout--collapsed .la-admin-collapse svg { transform: rotate(180deg); }
+
+/* 折叠态：64px 图标条 */
+.la-admin-layout--collapsed .la-admin-sidebar { width: 64px; }
+.la-admin-layout--collapsed .la-admin-brand { justify-content: center; gap: 0; padding: 0; overflow: hidden; }
+.la-admin-layout--collapsed .la-admin-brand-copy { width: 0; opacity: 0; }
+.la-admin-layout--collapsed .la-admin-group-label { opacity: 0; height: 12px; padding: 0; }
+.la-admin-layout--collapsed .la-admin-menu-item { width: 48px; margin-inline: 8px; padding: 0; grid-template-columns: 1fr; place-items: center; }
+.la-admin-layout--collapsed .la-admin-menu-item--active::before { left: -9px; }
+.la-admin-layout--collapsed .la-admin-menu-label { position: absolute; width: 0; opacity: 0; pointer-events: none; }
+
+/* --- 顶栏 --- */
+.la-admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  height: 72px;
+  flex: none;
+  padding: 0 24px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  background:
+    linear-gradient(90deg, rgba(var(--la-primary-rgb), 0.05), transparent 28%),
+    rgba(255, 255, 255, 0.92);
+  border-bottom: 1px solid var(--la-separator);
+  box-shadow: 0 6px 22px rgba(15, 23, 42, 0.045);
+  backdrop-filter: blur(20px);
+}
+.la-admin-header::after {
+  position: absolute;
+  bottom: -1px;
+  left: 24px;
+  width: 128px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--la-blue), var(--la-primary-hover), transparent);
+  content: '';
+}
+.la-admin-breadcrumb { display: flex; min-width: 0; align-items: center; font-size: 12.5px; }
+.la-admin-breadcrumb a { color: var(--la-text-3); text-decoration: none; white-space: nowrap; transition: color 140ms ease; }
+.la-admin-breadcrumb a:hover { color: var(--la-blue); }
+.la-admin-breadcrumb-sep { display: grid; width: 14px; height: 16px; flex: none; margin: 0 4px; color: #c3cad8; place-items: center; }
+.la-admin-breadcrumb-root, .la-admin-breadcrumb-group { color: var(--la-text-3); white-space: nowrap; }
+.la-admin-breadcrumb-current { padding: 3px 9px; color: var(--la-blue); font-size: 12.5px; font-weight: 600; letter-spacing: 0.01em; white-space: nowrap; background: rgba(var(--la-primary-rgb), 0.07); border: 1px solid rgba(var(--la-primary-rgb), 0.14); border-radius: var(--la-r-block); }
+/* --- 顶部右侧：当前登录用户（Minimalism & Swiss Style） ---
+   层次：头像(8px, 渐变+内描边) → 用户名(13/600) → 工作空间 chip → 旋转 chevron
+   交互：hover 200ms 背景+边框、按下 scale(.985)、键盘可见焦点、aria-expanded 同步 */
+.la-admin-user-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 10px 5px 6px;
+  color: var(--la-text-2);
+  font: inherit;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--la-r-block);
+  cursor: pointer;
+  transition:
+    background-color 200ms var(--la-ease, cubic-bezier(0.25, 0.1, 0.25, 1)),
+    border-color 200ms var(--la-ease, cubic-bezier(0.25, 0.1, 0.25, 1)),
+    box-shadow 200ms var(--la-ease, cubic-bezier(0.25, 0.1, 0.25, 1)),
+    transform 140ms var(--la-ease, cubic-bezier(0.25, 0.1, 0.25, 1));
+}
+.la-admin-user-trigger:hover {
+  background: rgba(var(--la-primary-rgb), 0.05);
+  border-color: rgba(var(--la-primary-rgb), 0.12);
+}
+.la-admin-user-trigger:active { transform: scale(0.985); }
+.la-admin-user-trigger:focus-visible {
+  outline: 2px solid var(--la-blue);
+  outline-offset: 2px;
+}
+
+/* 头像：品牌渐变 + 内高光 + 外光晕，避免纯色块显得单薄 */
+.la-admin-avatar {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: none;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  background: linear-gradient(150deg, var(--la-primary-hover, #4770ff), var(--la-blue));
+  border-radius: var(--la-r-panel, 8px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 3px 10px rgba(var(--la-primary-rgb), 0.28);
+  place-items: center;
+  transition: box-shadow 200ms var(--la-ease, cubic-bezier(0.25, 0.1, 0.25, 1));
+}
+.la-admin-user-trigger:hover .la-admin-avatar {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.34),
+    0 4px 14px rgba(var(--la-primary-rgb), 0.38);
+}
+
+.la-admin-user-summary {
+  display: flex;
+  min-width: 0;
+  max-width: 240px;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 3px;
+}
+.la-admin-user-summary strong,
+.la-admin-user-summary small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+/* 用户名：13px/600，主文字色，保证 4.5:1 */
+.la-admin-user-summary strong {
+  min-width: 0;
+  color: var(--la-text);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+}
+/* 工作空间：弱化为 chip，仍保持可读对比度 */
+.la-admin-user-summary small {
+  padding: 1px 6px;
+  color: var(--la-blue);
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.35;
+  background: rgba(var(--la-primary-rgb), 0.07);
+  border: 1px solid rgba(var(--la-primary-rgb), 0.16);
+  border-radius: 4px;
+}
+
+/* chevron：改用两条描边组成的箭头，菜单展开时旋转 180° */
+.la-admin-user-chevron {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  margin: 0 2px 3px 1px;
+  border-right: 1.6px solid var(--la-text-3);
+  border-bottom: 1.6px solid var(--la-text-3);
+  transform: rotate(45deg);
+  transition: transform 200ms var(--la-ease, cubic-bezier(0.25, 0.1, 0.25, 1)), border-color 200ms ease;
+}
+.la-admin-user-chevron.is-open { transform: rotate(-135deg); margin-bottom: -2px; }
+.la-admin-user-trigger:hover .la-admin-user-chevron { border-color: var(--la-blue); }
+
+/* --- 用户菜单（raw 模式自绘，与头部件同一套视觉） ---
+   注意：.n-dropdown-menu 有 4px !important（naive-ui 组件规范），
+   本菜单是自绘面板，用 .n-dropdown-menu.la-user-menu 提高优先级到面板级 8px。 */
+.n-dropdown-menu.la-user-menu {
+  min-width: 220px;
+  padding: 6px;
+  border-radius: var(--la-r-panel, 8px) !important;
+  background: #fff;
+  border: 1px solid var(--la-separator);
+  box-shadow: 0 12px 32px -10px rgba(15, 23, 42, 0.22), 0 2px 6px rgba(15, 23, 42, 0.06) !important;
+}
+.la-user-menu__head {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 9px 10px 10px;
+}
+.la-user-menu__head-name { color: var(--la-text); font-size: 13px; font-weight: 600; }
+.la-user-menu__head-sub { color: var(--la-text-3); font-size: 11px; }
+.la-user-menu__danger { color: var(--la-error-text, #b3261e) !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .la-admin-user-trigger,
+  .la-admin-avatar,
+  .la-admin-user-chevron { transition: none !important; }
+  .la-admin-user-trigger:active { transform: none !important; }
+}
+.la-admin-header-menu { display: none; }
+
+/* --- 内容区 --- */
+.la-admin-body { display: flex; min-width: 0; height: 100vh; min-height: 0; flex-direction: column; }
+.la-admin-main {
+  width: 100%;
+  height: 100%;          /* 配合 .la-admin-body 的 flex 列布局，滚动高度以视口为准 */
+  min-height: 0;         /* 允许 flex 子项收缩，否则 min-height:100% 会撑破滚动容器 */
+  padding: 24px;
+  outline: none;
+  overflow-y: auto;
+  flex: 1 1 auto;
+  overscroll-behavior: contain;
+}
+.la-admin-mask { display: none; }
+
+/* 页面切换过渡 */
+.la-admin-page-enter-active, .la-admin-page-leave-active { transition: opacity 160ms ease, transform 160ms ease; }
+.la-admin-page-enter-from { opacity: 0; transform: translateY(6px); }
+.la-admin-page-leave-to { opacity: 0; transform: translateY(-3px); }
+
+/* 移动端：侧栏抽屉 */
+@media (max-width: 800px) {
+  .la-admin-layout, .la-admin-layout--collapsed { padding-left: 0; }
+  .la-admin-layout .la-admin-main { padding: 16px; }
+  .la-admin-sidebar, .la-admin-layout--collapsed .la-admin-sidebar { width: min(272px, 82vw); transform: translateX(-105%); }
+  .la-admin-sidebar--mobile-open { transform: translateX(0); }
+  .la-admin-layout--collapsed .la-admin-brand-copy, .la-admin-layout--collapsed .la-admin-menu-label { width: auto; opacity: 1; position: static; }
+  .la-admin-layout--collapsed .la-admin-menu-item { width: calc(100% - 24px); margin-inline: 12px; padding: 0 14px; grid-template-columns: 22px minmax(0, 1fr); place-items: initial; }
+  .la-admin-layout--collapsed .la-admin-group-label { opacity: 1; height: auto; padding: 6px 26px 8px; }
+  .la-admin-mask { position: fixed; inset: 0; z-index: 45; display: block; background: rgba(15, 23, 42, 0.5); border: 0; backdrop-filter: blur(3px); }
+  .la-admin-header { padding: 0 16px; }
+  .la-admin-header-menu { display: grid; width: 40px; height: 40px; margin-right: 8px; color: var(--la-text-2); background: transparent; border: 0; border-radius: var(--la-r-block); place-items: center; }
+  .la-admin-user-summary, .la-admin-breadcrumb-group, .la-admin-breadcrumb-sep--group { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .la-admin-layout, .la-admin-sidebar, .la-admin-page-enter-active, .la-admin-page-leave-active { transition: none; }
+}
+
+/* 跳转主要内容（键盘可达） */
+.la-admin-skip {
+  position: fixed; top: 12px; left: 12px; z-index: 100;
+  padding: 10px 16px; color: #fff; text-decoration: none;
+  background: var(--la-blue); border-radius: var(--la-r-block);
+  transform: translateY(-160%); transition: transform 150ms ease;
+}
+.la-admin-skip:focus { transform: translateY(0); }
+.la-admin-header__actions { display: flex; align-items: center; gap: 4px; }

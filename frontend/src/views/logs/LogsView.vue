@@ -145,7 +145,7 @@ const columns = computed<DataTableColumns<RunLog>>(() => [
         ? null
         : h(
             NButton,
-            { size: 'tiny', quaternary: true, onClick: () => openDetail(row) },
+            { quaternary: true, onClick: () => openDetail(row) },
             { default: () => '详情' },
           ),
   },
@@ -163,10 +163,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="la-page max-w-[1400px]">
+  <div class="la-page">
     <PageHeader title="运行日志" subtitle="Agent / Workflow / LLM 调用全链路记录">
       <template #actions>
-        <NButton size="small" :loading="loading" @click="(() => { load(); loadStats() })()">
+        <NButton :loading="loading" @click="(() => { load(); loadStats() })()">
           <template #icon><LaIcon name="refresh" :size="14" /></template>
           刷新
         </NButton>
@@ -181,16 +181,15 @@ onMounted(async () => {
     </div>
 
     <div class="la-card">
-      <NTabs :value="tab" type="line" class="px-4 pt-1" @update:value="changeTab">
+      <NTabs :value="tab" type="line" class="px-3 pt-1" @update:value="changeTab">
         <NTabPane name="agent" tab="Agent 运行" />
         <NTabPane name="workflow" tab="Workflow 运行" />
         <NTabPane name="llm" tab="LLM 调用" />
       </NTabs>
 
-      <div class="flex flex-wrap items-center gap-2 px-4 py-2.5 border-b border-line">
+      <div class="flex flex-wrap items-center gap-2 px-3 py-2.5 border-b border-line">
         <NInput
           v-model:value="keyword"
-          size="small"
           placeholder="搜索输入或输出内容"
           class="la-search !w-[240px]"
           clearable
@@ -202,18 +201,16 @@ onMounted(async () => {
         <NSelect
           :value="status || ''"
           :options="statusOptions"
-          size="small"
           class="!w-[130px]"
           @update:value="(v: string) => { status = v || null; page = 1; load() }"
         />
         <NSelect
           :value="days"
           :options="[{ label: '近 1 天', value: 1 }, { label: '近 7 天', value: 7 }, { label: '近 30 天', value: 30 }]"
-          size="small"
           class="!w-[120px]"
           @update:value="(v: number) => { days = v; page = 1; load(); loadStats() }"
         />
-        <NButton size="small" @click="((page = 1), load())">查询</NButton>
+        <NButton @click="((page = 1), load())">查询</NButton>
         <div class="flex-1"></div>
         <span v-if="route.query.app" class="text-[11.5px] text-muted">
           已按应用过滤
@@ -228,7 +225,6 @@ onMounted(async () => {
         :row-key="(r: RunLog) => r.id"
         :bordered="false"
         :single-line="false"
-        size="small"
         :pagination="{
           page,
           pageSize,
@@ -248,15 +244,15 @@ onMounted(async () => {
         <div v-else-if="detail" class="space-y-3">
           <div v-if="detailType === 'agent'">
             <div class="grid grid-cols-2 gap-2 text-[12px]">
-              <div class="border border-line rounded-lg p-2">
+              <div class="border border-line rounded-[8px] p-2">
                 <div class="text-[11px] text-muted">状态</div>
                 <div class="mt-1"><StatusTag :status="detail.run.status" /></div>
               </div>
-              <div class="border border-line rounded-lg p-2">
+              <div class="border border-line rounded-[8px] p-2">
                 <div class="text-[11px] text-muted">模型 / 模式</div>
                 <div class="text-ink mt-1">{{ detail.run.model_name }} · {{ detail.run.mode }}</div>
               </div>
-              <div class="border border-line rounded-lg p-2">
+              <div class="border border-line rounded-[8px] p-2">
                 <div class="text-[11px] text-muted">Token</div>
                 <div class="text-ink mt-1">
                   {{ detail.run.total_tokens }}
@@ -265,7 +261,7 @@ onMounted(async () => {
                   </span>
                 </div>
               </div>
-              <div class="border border-line rounded-lg p-2">
+              <div class="border border-line rounded-[8px] p-2">
                 <div class="text-[11px] text-muted">耗时 / 步数</div>
                 <div class="text-ink mt-1">
                   {{ formatDuration(detail.run.duration_ms) }} · {{ detail.run.steps_count }} 步
@@ -275,13 +271,13 @@ onMounted(async () => {
 
             <div class="mt-3">
               <div class="text-[12px] font-medium text-ink mb-1">用户输入</div>
-              <div class="bg-[#F7F7F9] border border-line rounded-lg p-2 text-[12px] whitespace-pre-wrap">
+              <div class="bg-[#F7F7F9] border border-line rounded-[8px] p-2 text-[12px] whitespace-pre-wrap">
                 {{ detail.run.user_input || '—' }}
               </div>
             </div>
             <div class="mt-2">
               <div class="text-[12px] font-medium text-ink mb-1">最终输出</div>
-              <div class="bg-white border border-line rounded-lg p-2 text-[12px] whitespace-pre-wrap">
+              <div class="bg-white border border-line rounded-[8px] p-2 text-[12px] whitespace-pre-wrap">
                 {{ detail.run.output || '—' }}
               </div>
             </div>
@@ -289,10 +285,10 @@ onMounted(async () => {
             <div v-if="detail.steps?.length" class="mt-3">
               <div class="text-[12px] font-medium text-ink mb-1">执行轨迹</div>
               <div class="space-y-1.5">
-                <div v-for="s in detail.steps" :key="s.id" class="border border-line rounded-lg p-2">
+                <div v-for="s in detail.steps" :key="s.id" class="border border-line rounded-[8px] p-2">
                   <div class="flex items-center gap-2 text-[11px]">
                     <span class="px-1.5 py-0.5 rounded bg-[rgba(118,118,128,0.08)] text-[rgba(60,60,67,0.7)]">{{ s.step_type }}</span>
-                    <span v-if="s.tool_name" class="text-[#007AFF] font-mono">{{ s.tool_name }}</span>
+                    <span v-if="s.tool_name" class="text-[#184CFF] font-mono">{{ s.tool_name }}</span>
                     <span class="text-muted">{{ s.duration_ms }}ms</span>
                   </div>
                   <div class="text-[11.5px] text-[rgba(60,60,67,0.7)] mt-1 whitespace-pre-wrap break-all max-h-40 overflow-y-auto">
@@ -301,34 +297,34 @@ onMounted(async () => {
                 </div>
               </div>
             </div>
-            <div v-if="detail.run.error" class="mt-2 text-[12px] text-[#FF3B30] bg-[rgba(255,59,48,0.10)] border border-[#FECACA] rounded-lg p-2">
+            <div v-if="detail.run.error" role="alert" aria-live="polite" class="mt-2 text-[12px] rounded-[6px] p-2" style="color: var(--la-error-text); background: var(--la-error-bg); border: 1px solid var(--la-error-border)">
               {{ detail.run.error }}
             </div>
           </div>
 
           <div v-else>
             <div class="grid grid-cols-2 gap-2 text-[12px]">
-              <div class="border border-line rounded-lg p-2">
+              <div class="border border-line rounded-[8px] p-2">
                 <div class="text-[11px] text-muted">状态</div>
                 <div class="mt-1"><StatusTag :status="detail.run.status" /></div>
               </div>
-              <div class="border border-line rounded-lg p-2">
+              <div class="border border-line rounded-[8px] p-2">
                 <div class="text-[11px] text-muted">耗时</div>
                 <div class="text-ink mt-1">{{ formatDuration(detail.run.duration_ms) }}</div>
               </div>
             </div>
             <div class="mt-3">
               <div class="text-[12px] font-medium text-ink mb-1">输入</div>
-              <pre class="bg-[#F7F7F9] border border-line rounded-lg p-2 text-[11.5px] overflow-x-auto">{{ JSON.stringify(detail.run.inputs, null, 2) }}</pre>
+              <pre class="bg-[#F7F7F9] border border-line rounded-[8px] p-2 text-[11.5px] overflow-x-auto">{{ JSON.stringify(detail.run.inputs, null, 2) }}</pre>
             </div>
             <div class="mt-2">
               <div class="text-[12px] font-medium text-ink mb-1">输出</div>
-              <pre class="bg-white border border-line rounded-lg p-2 text-[11.5px] overflow-x-auto">{{ JSON.stringify(detail.run.outputs, null, 2) }}</pre>
+              <pre class="bg-white border border-line rounded-[8px] p-2 text-[11.5px] overflow-x-auto">{{ JSON.stringify(detail.run.outputs, null, 2) }}</pre>
             </div>
             <div class="mt-3">
               <div class="text-[12px] font-medium text-ink mb-1">节点轨迹</div>
               <div class="space-y-1.5">
-                <div v-for="n in detail.nodes" :key="n.node_id" class="border border-line rounded-lg p-2">
+                <div v-for="n in detail.nodes" :key="n.node_id" class="border border-line rounded-[8px] p-2">
                   <div class="flex items-center justify-between text-[11.5px]">
                     <span class="text-ink">{{ n.title }} <span class="text-muted font-mono">{{ n.node_id }}</span></span>
                     <StatusTag :status="n.status" />
@@ -339,7 +335,7 @@ onMounted(async () => {
                 </div>
               </div>
             </div>
-            <div v-if="detail.run.error" class="mt-2 text-[12px] text-[#FF3B30] bg-[rgba(255,59,48,0.10)] border border-[#FECACA] rounded-lg p-2">
+            <div v-if="detail.run.error" role="alert" aria-live="polite" class="mt-2 text-[12px] rounded-[6px] p-2" style="color: var(--la-error-text); background: var(--la-error-bg); border: 1px solid var(--la-error-border)">
               {{ detail.run.error }}
             </div>
           </div>

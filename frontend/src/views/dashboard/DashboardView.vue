@@ -6,7 +6,7 @@ import PageHeader from '@/components/common/PageHeader.vue'
 import StatCard from '@/components/common/StatCard.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import StatusTag from '@/components/common/StatusTag.vue'
-import EChart from '@/components/common/EChart.vue'
+import VEcharts from '@/components/common/VEcharts/index.vue'
 import LaIcon from '@/components/common/LaIcon.vue'
 import { dashboardApi } from '@/api/auth'
 import { formatNumber, truncate, formatDate, formatDuration } from '@/utils/format'
@@ -23,7 +23,7 @@ const stats = computed(() => overview.value?.stats || {})
 
 const trendOption = computed(() => ({
   grid: { left: 4, right: 8, top: 18, bottom: 0, containLabel: true },
-  tooltip: { trigger: 'axis', axisPointer: { type: 'line', lineStyle: { color: 'rgba(0,122,255,0.3)' } } },
+  tooltip: { trigger: 'axis', axisPointer: { type: 'line', lineStyle: { color: 'rgba(24,76,255,0.3)' } } },
   xAxis: {
     type: 'category',
     boundaryGap: false,
@@ -46,8 +46,8 @@ const trendOption = computed(() => ({
       showSymbol: false,
       emphasis: { scale: 1.4 },
       data: (trend.value.trend || []).map((d: any) => d.count),
-      itemStyle: { color: '#007AFF', borderColor: '#fff', borderWidth: 2 },
-      lineStyle: { width: 2.5, color: '#007AFF' },
+      itemStyle: { color: '#184CFF', borderColor: '#fff', borderWidth: 2 },
+      lineStyle: { width: 2.5, color: '#184CFF', type: 'solid' },
       areaStyle: {
         color: {
           type: 'linear',
@@ -56,8 +56,8 @@ const trendOption = computed(() => ({
           x2: 0,
           y2: 1,
           colorStops: [
-            { offset: 0, color: 'rgba(0,122,255,0.20)' },
-            { offset: 1, color: 'rgba(0,122,255,0.01)' },
+            { offset: 0, color: 'rgba(24,76,255,0.20)' },
+            { offset: 1, color: 'rgba(24,76,255,0.01)' },
           ],
         },
       },
@@ -70,7 +70,7 @@ const modelOption = computed(() => {
   return {
     tooltip: { trigger: 'item' },
     legend: { bottom: 0, icon: 'circle', itemWidth: 7, itemHeight: 7 },
-    color: ['#007AFF', '#34C759', '#FF9500', '#AF52DE', '#30B0C7', '#5856D6'],
+    color: ['#184CFF', '#34C759', '#FF9500', '#AF52DE', '#30B0C7', '#5856D6'],
     series: [
       {
         type: 'pie',
@@ -79,7 +79,7 @@ const modelOption = computed(() => {
         avoidLabelOverlap: true,
         padAngle: 2,
         itemStyle: { borderRadius: 6, borderColor: '#fff', borderWidth: 2 },
-        label: { show: false },
+        label: { show: true, formatter: '{b}', fontSize: 11, color: '#59595e' },
         data: models.length
           ? models.map((m: any) => ({ name: m.name, value: m.count }))
           : [{ name: '暂无调用', value: 1, itemStyle: { color: 'rgba(120,120,128,0.18)' } }],
@@ -113,7 +113,7 @@ const quickActions = [
     desc: '配置提示词与工具',
     icon: 'robot',
     to: '/applications',
-    bg: 'linear-gradient(160deg, #4BA3FF 0%, #007AFF 100%)',
+    bg: 'linear-gradient(160deg, #6B8CFF 0%, #184CFF 100%)',
   },
   {
     label: '创建工作流',
@@ -149,7 +149,7 @@ onMounted(load)
   <div class="la-page">
     <PageHeader title="工作空间" subtitle="平台整体运行概览与快速入口">
       <template #actions>
-        <NButton size="small" :loading="loading" @click="load">
+        <NButton :loading="loading" @click="load">
           <template #icon><LaIcon name="refresh" :size="14" /></template>
           刷新
         </NButton>
@@ -157,9 +157,12 @@ onMounted(load)
     </PageHeader>
 
     <!-- 错误态 -->
-    <div v-if="error" class="la-card p-10 text-center">
-      <div class="text-[14px]" style="color: #ff3b30">{{ error }}</div>
-      <NButton class="mt-4" size="small" @click="load">重试</NButton>
+    <div v-if="error" class="la-card p-10 text-center" role="alert" aria-live="assertive">
+      <div class="flex items-center justify-center gap-2 text-[14px]" style="color: var(--la-error-text)">
+        <LaIcon name="warn" :size="15" />
+        <span>{{ error }}</span>
+      </div>
+      <NButton class="mt-4" @click="load">重试</NButton>
     </div>
 
     <template v-else>
@@ -180,11 +183,11 @@ onMounted(load)
             <div class="text-[14px] font-semibold text-ink tracking-tight">应用调用趋势</div>
             <span class="text-[11.5px] text-muted">近 7 天</span>
           </div>
-          <EChart :option="trendOption" height="228px" :loading="loading" />
+          <VEcharts :options="trendOption" height="228px" label="近 7 天应用调用趋势折线图" />
         </div>
         <div class="la-card p-4">
           <div class="text-[14px] font-semibold text-ink tracking-tight mb-1 px-0.5">模型使用分布</div>
-          <EChart :option="modelOption" height="228px" :loading="loading" />
+          <VEcharts :options="modelOption" height="228px" label="模型使用分布饼图" />
         </div>
       </div>
 
@@ -197,7 +200,7 @@ onMounted(load)
               全部
             </button>
           </div>
-          <div v-if="loading" class="py-10 flex justify-center"><NSpin size="small" /></div>
+          <div v-if="loading" class="py-10 flex justify-center"><NSpin /></div>
           <EmptyState
             v-else-if="!recent.applications?.length"
             compact
@@ -205,7 +208,7 @@ onMounted(load)
             title="还没有应用"
             description="从模板创建一个 Agent，几分钟即可跑通第一次对话"
           >
-            <NButton size="small" type="primary" @click="router.push('/applications')">创建应用</NButton>
+            <NButton type="primary" @click="router.push('/applications')">创建应用</NButton>
           </EmptyState>
           <div v-else class="la-list border-t border-line">
             <div
@@ -220,7 +223,7 @@ onMounted(load)
                   background:
                     a.app_type === 'workflow'
                       ? 'linear-gradient(160deg, #7B79E8 0%, #5856D6 100%)'
-                      : 'linear-gradient(160deg, #4BA3FF 0%, #007AFF 100%)',
+                      : 'linear-gradient(160deg, #6B8CFF 0%, #184CFF 100%)',
                 }"
               >
                 <LaIcon :name="a.app_type === 'workflow' ? 'flow' : 'robot'" :size="16" :stroke-width="2" />
@@ -242,7 +245,7 @@ onMounted(load)
               全部
             </button>
           </div>
-          <div v-if="loading" class="py-10 flex justify-center"><NSpin size="small" /></div>
+          <div v-if="loading" class="py-10 flex justify-center"><NSpin /></div>
           <EmptyState
             v-else-if="!recent.runs?.length"
             compact

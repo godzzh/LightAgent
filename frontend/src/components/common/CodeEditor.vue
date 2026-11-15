@@ -71,7 +71,7 @@ onBeforeUnmount(() => editor?.dispose())
 </script>
 
 <template>
-  <div class="border border-line rounded-lg overflow-hidden bg-white">
+  <div class="border border-line rounded-[8px] overflow-hidden bg-white">
     <div ref="container" :style="{ height }"></div>
   </div>
 </template>

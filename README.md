@@ -149,9 +149,9 @@ Agent / Workflow / LLM 三类日志统一查询，支持关键词、状态、时
 
 ---
 
-## 三之二、界面设计系统（iOS 风格）
+## 三之二、界面设计系统
 
-前端视觉按 Apple Human Interface Guidelines 重构，设计 token 集中在两处，改主题不必逐页改代码：
+前端视觉采用统一品牌设计语言，设计 token 集中在两处，改主题不必逐页改代码：
 
 | 文件 | 作用 |
 | --- | --- |
@@ -161,14 +161,36 @@ Agent / Workflow / LLM 三类日志统一查询，支持关键词、状态、时
 
 **核心规范**
 
-- **配色**：系统蓝 `#007AFF` 主色，`#F2F2F7` 分组背景，`#1C1C1E` 主文字，`rgba(60,60,67,.13)` 分割线；语义色用系统绿 `#34C759`、橙 `#FF9500`、红 `#FF3B30`。
-- **字体**：`-apple-system / SF Pro / PingFang SC` 系统栈，标题收紧字距（`-0.022em`），符合 iOS 排版习惯。
-- **形状**：卡片 18px、分组 12px、控件 10px 连续圆角；阴影极轻（`0 1px 2px` + 大扩散低透明），靠留白和层次而非投影。
-- **材质**：导航栏与浮层使用 Liquid Glass 轻量版（`backdrop-filter: blur(24px) saturate(180%)` + 72% 白），已提供 `prefers-reduced-transparency` 退化方案。
-- **列表**：`.la-list` + `.la-row` 实现 iOS inset-grouped 列表（52px 行高、行间 0.5px 分割线、hover 变色、按压反馈）。
-- **动效**：统一弹簧曲线 `cubic-bezier(.32,.72,0,1)`，按压 `scale(.975)`，且不改变布局盒尺寸；完整支持 `prefers-reduced-motion`。
+- **配色**：品牌蓝 `#184CFF` 主色（hover `#4770FF`、按下 `#1038D6`），`#F5F7FA` 内容区背景、`#FFFFFF` 卡片、`#E5EAF3` 分割线、`#1F2329` 主文字 / `#4E5969` 次级文字；语义色用系统绿 `#34C759`、橙 `#FF9500`、红 `#FF3B30`。
+- **字体**：`-apple-system / SF Pro / PingFang SC` 系统栈，标题收紧字距（`-0.022em`）。
+- **形状（圆角分层）**：**naive-ui 组件统一 4px**（`App.vue` 的 `themeOverrides` 与 `index.css` 的 `.n-*` 覆盖均指向 `--la-r-control: 4px`）；自定义卡片/面板/弹窗/代码块/分组容器用 `--la-r-panel: 8px`，小图标块/标签/列表项/菜单项用 `--la-r-block: 6px`；开关、胶囊、状态点、头像保持全圆角（`999px` / `50%`），Tabs 指示条等装饰条保持 2px。卡片阴影 `0 4px 20px rgba(15,23,42,.06)` 且顶部带 108px 主色渐变条。
+  注意 `VModal` 面板根节点会被 `NModal` 附加 `.n-modal` 类，因此其 8px 规则用 `!important` + scoped 选择器保证不被 naive-ui 的 4px 覆盖压掉；弹框**内部**的 naive-ui 按钮仍为 4px。
+- **开关**：所有 `NSwitch` 统一加 `:round="false"`（方形轨道），`App.vue` 的 `Switch.railColorActive` 使用品牌主色 `#184CFF`（此前硬编码绿色 `#34C759` 已移除；naive-ui 默认即取 `primaryColor`），轨道/按钮圆角随主题 4px。
+- **布局**：参考「统一网络治理平台」Admin 后台：`frontend/src/layouts/MainLayout.vue` 实现 240px 可折叠侧栏（收起 64px、状态存 `localStorage`）、浅蓝渐变侧栏、分组菜单与激活指示条、72px 面包屑顶栏与用户菜单、`24px` 网格纹内容区；移动端侧栏变抽屉。
+- **材质**：顶栏/浮层使用轻量毛玻璃（`backdrop-filter: blur(20px)` + 92% 白），已提供 `prefers-reduced-transparency` 退化方案。
+- **动效**：统一 200ms `ease` 过渡、页面切换 160ms 淡入位移，且不改变布局盒尺寸；完整支持 `prefers-reduced-motion`。
+- **登录页**：`/login` 由 `ui-ux-pro-max` 的 `HUD / Sci-Fi FUI` 风格重设计（深色 `#060B18` 全屏、48px 网格 + 双径向光晕 + 单条扫描光带、顶部系统状态条、左品牌 Hero + 右认证面板分栏、四角 HUD 括号、等宽技术刻度、发光主按钮）。深色仅作用于登录页（`position: fixed` 全屏），不影响后台浅色主题；强调色仍为 `#184CFF`，圆角分层不变。动效仅 2 处且 `prefers-reduced-motion` 下禁用；表单含真实 `<label for>`、无 emoji、可见焦点。设计依据与页面级规则见 [design-system/lightagent/pages/login.md](design-system/lightagent/pages/login.md)。
+- **图标**：统一使用 [`@remixicon/vue`](https://www.npmjs.com/package/@remixicon/vue) 的 Vue 组件（Remix Icon，24×24 网格、线性风格）。所有页面通过 `frontend/src/components/common/LaIcon.vue` 适配层调用，对外保持 `name` / `size` / `color` / `strokeWidth` API：
+  ```vue
+  <LaIcon name="dashboard" :size="17" />
+  ```
+  `name` 支持语义别名（如 `dashboard`、`flow`、`trash`）、旧版 camelCase / kebab-case 名，或直接传 Remix 组件名（如 `RiRocketLine`）；未收录的名称兜底为 `RiQuestionLine`。适配层**显式静态导入**所用图标，不会把 3200+ 图标全量打进产物。`strokeWidth` 保留仅为兼容旧签名（Remix 笔画宽度固定），同层级统一使用 Line 线性风格。新增图标时：优先复用已有别名；确需新图标，在 `LaIcon.vue` 的 import 与 `ICONS` 中登记对应 `RiXxxLine`。
 
-**复用类**：`.la-card`（分组卡片）、`.la-page`（页面容器）、`.la-title`（大标题）、`.la-section-label`（分组标签）、`.la-pill`（状态胶囊）、`.la-icon-tile`（App 图标）、`.la-tile`（悬浮入口）、`.la-glass`（毛玻璃）、`.la-search`（iOS 搜索框）、`.la-typing`（打字指示器）。
+- **弹框**：所有 `NModal` 弹窗统一使用 `frontend/src/components/common/VModal/index.vue`（移植自参考项目 `VModal`）。自带可拖拽标题栏（`v-drag`）、主/副标题、`v-loading` 遮罩、`NScrollbar` 滚动体与 `#footer` 插槽；`role="dialog"` + `aria-modal`。用法：
+  ```vue
+  <VModal v-model:show="showCreate" title="创建知识库" :width="560">
+    <!-- 表单 -->
+    <template #footer><NButton type="primary">保存</NButton></template>
+  </VModal>
+  ```
+  配套指令在 `src/directives/`（`drag` / `loading`），于 `src/main.ts` 全局注册。`NDrawer` 抽屉与 `useDialog` 命令式确认框保持原样。
+- **图表**：统一使用 `frontend/src/components/common/VEcharts/index.vue`（移植自参考项目 `VEcharts`）：按需引入 `echarts/core`（Bar/Line/Pie/Scatter + 常用组件 + CanvasRenderer）、`@vueuse/core` 的 `useElementSize` 自适应、容器量出尺寸后才喂首份配置（避免入场动画在 0×0 画布播完）、仅在尺寸真变化时 resize、支持 `autoPlay` / 图表事件 / `height` / `label`。用法：
+  ```vue
+  <VEcharts :options="trendOption" height="228px" label="近 7 天应用调用趋势折线图" />
+  ```
+  旧 `EChart.vue` 已不再被页面引用。
+
+**复用类**：`.la-card`（分组卡片）、`.la-page`（页面容器）、`.la-title`（大标题）、`.la-section-label`（分组标签）、`.la-pill`（状态胶囊）、`.la-icon-tile`（App 图标）、`.la-tile`（悬浮入口）、`.la-glass`（毛玻璃）、`.la-search`（搜索框）、`.la-typing`（打字指示器）、`.la-icon-btn-danger`（危险图标按钮，常驻可见、键盘可达）。
 
 ---
 

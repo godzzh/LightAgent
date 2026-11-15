@@ -50,7 +50,7 @@ onMounted(load)
 </script>
 
 <template>
-  <div class="la-page max-w-[860px]">
+  <div class="la-page">
     <PageHeader title="系统设置" subtitle="账号、工作空间与平台信息" />
 
     <div v-if="loading" class="la-card p-10 flex justify-center"><NSpin /></div>
@@ -77,14 +77,14 @@ onMounted(load)
           </div>
         </div>
         <div class="mt-4">
-          <NButton type="primary" size="small" :loading="saving" @click="save">保存修改</NButton>
+          <NButton type="primary" :loading="saving" @click="save">保存修改</NButton>
         </div>
       </div>
 
       <div class="la-card p-5 mb-3">
         <div class="text-[14px] font-medium text-ink mb-3">工作空间</div>
         <div class="flex items-center gap-3">
-          <span class="w-9 h-9 rounded-lg bg-[rgba(0,122,255,0.11)] text-primary flex items-center justify-center">
+          <span class="w-9 h-9 rounded-[6px] bg-[rgba(24,76,255,0.11)] text-primary flex items-center justify-center">
             <LaIcon name="dashboard" :size="17" />
           </span>
           <div>
@@ -97,21 +97,21 @@ onMounted(load)
       <div class="la-card p-5">
         <div class="text-[14px] font-medium text-ink mb-3">平台信息</div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-[12.5px]">
-          <div class="border border-line rounded-lg p-3">
+          <div class="border border-line rounded-[8px] p-3">
             <div class="text-[11.5px] text-muted">前端</div>
             <div class="text-ink mt-0.5">Vue 3 + TypeScript + Vite + Naive UI + Tailwind</div>
           </div>
-          <div class="border border-line rounded-lg p-3">
+          <div class="border border-line rounded-[8px] p-3">
             <div class="text-[11.5px] text-muted">后端</div>
             <div class="text-ink mt-0.5">FastAPI + SQLAlchemy 2.x + PostgreSQL/pgvector</div>
           </div>
-          <div class="border border-line rounded-lg p-3">
+          <div class="border border-line rounded-[8px] p-3">
             <div class="text-[11.5px] text-muted">接口文档</div>
             <a href="/docs" target="_blank" class="text-primary hover:underline mt-0.5 inline-flex items-center gap-1">
               Swagger / OpenAPI <LaIcon name="external" :size="11" />
             </a>
           </div>
-          <div class="border border-line rounded-lg p-3">
+          <div class="border border-line rounded-[8px] p-3">
             <div class="text-[11.5px] text-muted">健康检查</div>
             <a href="/health" target="_blank" class="text-primary hover:underline mt-0.5 inline-flex items-center gap-1">
               /health <LaIcon name="external" :size="11" />

@@ -124,17 +124,17 @@ onMounted(load)
 </script>
 
 <template>
-  <div class="la-page max-w-[1100px]">
+  <div class="la-page">
     <PageHeader
       :title="`发布设置 · ${app?.name || ''}`"
       subtitle="发布后即可通过独立 API 被第三方系统调用"
     >
       <template #actions>
-        <NButton size="small" @click="router.push(`/applications/${appId}/${app?.app_type === 'workflow' ? 'publish' : 'agent'}`)">
+        <NButton @click="router.push(`/applications/${appId}/${app?.app_type === 'workflow' ? 'publish' : 'agent'}`)">
           返回调试
         </NButton>
-        <NButton v-if="app?.status === 'published'" size="small" @click="unpublish">取消发布</NButton>
-        <NButton size="small" type="primary" :loading="publishing" @click="publish">
+        <NButton v-if="app?.status === 'published'" @click="unpublish">取消发布</NButton>
+        <NButton type="primary" :loading="publishing" @click="publish">
           {{ app?.status === 'published' ? '重新发布（生成快照）' : '发布应用' }}
         </NButton>
       </template>
@@ -151,7 +151,7 @@ onMounted(load)
         <div class="la-card p-4">
           <div class="text-[11.5px] text-muted">API 开关</div>
           <div class="flex items-center gap-2 mt-1.5">
-            <NSwitch :value="app.api_enabled" size="small" :disabled="app.status !== 'published'" @update:value="toggleApi" />
+            <NSwitch :value="app.api_enabled" :disabled="app.status !== 'published'" @update:value="toggleApi" :round="false" />
             <span class="text-[12px] text-[rgba(60,60,67,0.7)]">{{ app.api_enabled ? '已开启' : '已关闭' }}</span>
           </div>
         </div>
@@ -164,10 +164,10 @@ onMounted(load)
       <!-- API 端点 -->
       <div class="la-card p-4 mb-3">
         <div class="text-[13.5px] font-medium text-ink mb-2">API 端点</div>
-        <div class="flex items-center gap-2 bg-[#F7F7F9] border border-line rounded-lg px-3 py-2">
-          <NTag size="small" :bordered="false" type="info">{{ app.app_type === 'workflow' ? 'POST' : 'POST' }}</NTag>
+        <div class="flex items-center gap-2 bg-[#F7F7F9] border border-line rounded-[8px] px-3 py-2">
+          <NTag :bordered="false" type="info">{{ app.app_type === 'workflow' ? 'POST' : 'POST' }}</NTag>
           <code class="text-[12px] text-[#1C1C1E] flex-1 break-all">http://localhost:8000{{ endpoint }}</code>
-          <NButton size="tiny" quaternary @click="copy(`http://localhost:8000${endpoint}`)">
+          <NButton quaternary @click="copy(`http://localhost:8000${endpoint}`)">
             <template #icon><LaIcon name="copy" :size="13" /></template>
           </NButton>
         </div>
@@ -182,7 +182,7 @@ onMounted(load)
       <div class="la-card p-4 mb-3">
         <div class="flex items-center justify-between mb-2">
           <div class="text-[13.5px] font-medium text-ink">API 访问密钥</div>
-          <NButton size="tiny" @click="createKey">
+          <NButton @click="createKey">
             <template #icon><LaIcon name="plus" :size="12" /></template>
             生成新密钥
           </NButton>
@@ -198,7 +198,6 @@ onMounted(load)
             <span class="text-[11px] text-muted">最近使用：{{ formatDate(k.last_used_at) }}</span>
             <div class="flex-1"></div>
             <NButton
-              size="tiny"
               quaternary
               @click="appApi.deleteKey(appId, k.id).then(() => ((keys = keys.filter((x) => x.id !== k.id)), message.success('已删除')))"
             >
@@ -212,9 +211,9 @@ onMounted(load)
       <div class="la-card p-4">
         <div class="text-[13.5px] font-medium text-ink mb-2">调用示例</div>
         <div class="text-[11.5px] text-muted mb-1">请求</div>
-        <pre class="bg-[#1C1C1E] text-[#E2E8F0] rounded-lg p-3 text-[11.5px] overflow-x-auto font-mono">{{ curlExample }}</pre>
+        <pre class="bg-[#1C1C1E] text-[#E2E8F0] rounded-[8px] p-3 text-[11.5px] overflow-x-auto font-mono">{{ curlExample }}</pre>
         <div class="text-[11.5px] text-muted mt-3 mb-1">响应（非流式）</div>
-        <pre class="bg-[#F7F7F9] border border-line text-[#1C1C1E] rounded-lg p-3 text-[11.5px] overflow-x-auto font-mono">{{ responseExample }}</pre>
+        <pre class="bg-[#F7F7F9] border border-line text-[#1C1C1E] rounded-[8px] p-3 text-[11.5px] overflow-x-auto font-mono">{{ responseExample }}</pre>
 
         <div class="mt-3 text-[11.5px] text-muted leading-5">
           流式响应使用标准 SSE，事件包括

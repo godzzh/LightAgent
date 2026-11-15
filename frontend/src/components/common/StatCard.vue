@@ -18,7 +18,7 @@ const props = withDefaults(
 
 /** iOS 系统色渐变，用于图标底 */
 const tones: Record<Tone, string> = {
-  blue: 'linear-gradient(160deg, #4BA3FF 0%, #007AFF 100%)',
+  blue: 'linear-gradient(160deg, #6B8CFF 0%, #184CFF 100%)',
   green: 'linear-gradient(160deg, #5BD97A 0%, #34C759 100%)',
   purple: 'linear-gradient(160deg, #C86BEC 0%, #AF52DE 100%)',
   orange: 'linear-gradient(160deg, #FFB03A 0%, #FF9500 100%)',
